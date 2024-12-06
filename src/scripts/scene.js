@@ -27,8 +27,6 @@ export class Scene {
     const road = new PIXI.Sprite(roadSprite);
     road.width = App.app.renderer.width;
     road.height = App.app.renderer.height;
-    road.x = 0;
-    road.y = 0;
     this.container.addChild(road);
   }
 }

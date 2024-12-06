@@ -1,5 +1,6 @@
 import { Application } from 'pixi.js';
 import { Scene } from './scene';
+import { Player } from './player';
 
 class GameApplication {
   constructor() {
@@ -13,6 +14,8 @@ class GameApplication {
     this.scenes = new Scene();
     this.app.stage.interactive = true;
     this.app.stage.addChild(this.scenes.container);
+    this.player = new Player();
+    this.app.stage.addChild(this.player.container);
   }
 }
 
