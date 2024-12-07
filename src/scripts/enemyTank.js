@@ -4,14 +4,13 @@ import { loadFrames } from './utils/loadFrames.js';
 export class EnemyTank extends Enemy {
   constructor(x, y) {
     // Appelle le constructeur de la classe parente sans textures (ici on passe un tableau vide ou null)
-    super(x, y);
+    super(x, y, 1, 200);
 
     // Charge les animations après l'initialisation de l'objet
     this.loadAnimation();
   }
   // Charger les animations de l'ennemi (walking, dying, etc.)
   async loadAnimation() {
-    this.animations = {};
     try {
       this.animations.walking = await loadFrames(
         'src/Assets/Character/Enemy/Zombie3/Walking/0_Zombie_Villager_Walking_'

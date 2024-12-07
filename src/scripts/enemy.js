@@ -13,10 +13,12 @@ export class Enemy {
     this.vy = 0; // Vitesse verticale initiale
     this.gravity = 0.5; // Force gravitationnelle
     this.grounded = false; // Indicateur si l'ennemi est au sol
+    this.attacking = false;
+    this.animations = {};
   }
 
   chargeEnemy(texture) {
-    this.enemy = new PIXI.AnimatedSprite(texture);
+    this.enemy = new PIXI.AnimatedSprite(texture, 1);
     this.enemy.anchor.set(0.5);
     this.enemy.animationSpeed = 0.5; // Vitesse de l'animation
     this.enemy.play(); // Lance l'animation en boucle
@@ -28,8 +30,9 @@ export class Enemy {
 
   launchWalkingAnimation() {
     if (this.animations.walking && this.animations.walking.length > 0) {
-      this.textures = this.animations.walking;
+      this.enemy.textures = this.animations.walking;
       this.enemy.play();
+      console.log('walking');
     } else {
       console.error(
         "Erreur : l'animation de marche est manquante ou indéfinie."
@@ -37,7 +40,7 @@ export class Enemy {
     }
   }
 
-  update(delta, ground) {
+  async update(delta, ground) {
     if (!this.enemy) {
       return;
     }
@@ -47,19 +50,48 @@ export class Enemy {
       this.y += this.vy; // Met à jour la position verticale
       console.log('vy', this.vy);
     }
-    this.launchWalkingAnimation();
 
     // Détecter la collision avec le sol
     this.checkCollisionWithGround(ground);
 
-    if (App.app.player.character.x > this.x) {
+    if (App.app.player.character.x > this.x && !this.attacking) {
       this.x += this.speed;
-    } else {
+
+      this.launchWalkingAnimation();
+    } else if (App.app.player.character.x < this.x && !this.attacking) {
       this.x -= this.speed;
+      this.launchWalkingAnimation();
+    }
+    if (
+      App.app.player.character.x > this.x - 100 &&
+      App.app.player.character.x < this.x + 100 &&
+      !this.attacking
+    ) {
+      this.attacking = true;
+      this.launchAttackAnimation();
+
+      //met en pause jusqu'à la fin de l'animation
+
+      setTimeout(() => {
+        console.log('fin attaque');
+        this.attacking = false;
+        console.log('attacking', this.attacking);
+      }, 450);
     }
     // Appliquer les nouvelles coordonnées au conteneur
     this.container.x = this.x;
     this.container.y = this.y;
+  }
+
+  launchAttackAnimation() {
+    if (this.animations.attacking && this.animations.attacking.length > 0) {
+      this.enemy.textures = this.animations.attacking;
+      this.enemy.play();
+    } else {
+      console.error(
+        "Erreur : l'animation d'attaque est manquante ou indéfinie."
+      );
+    }
   }
 
   checkCollisionWithGround(ground) {
