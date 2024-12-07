@@ -1,22 +1,45 @@
 import * as PIXI from 'pixi.js';
 import { App } from './app.js';
 import { EnemyBasic } from './enemyBasic.js';
+import { EnemyFast } from './enemyFast.js';
+import { EnemyTank } from './enemyTank.js';
 
 export class Scene {
   constructor() {
     this.container = new PIXI.Container();
     this.container.interactive = true;
     this.scene = null;
+    this.enemies = [];
     this.showScene();
-    this.loadEnnemy();
+    this.addEnemy('basic');
+    this.addEnemy('fast');
+    this.addEnemy('tank');
+
     App.app.stage.addChild(this.container);
+    App.app.ticker.add((delta) => this.update(delta));
   }
 
-  async loadEnnemy() {
-    const ennemy = new EnemyBasic(
-      (App.app.renderer.width / 2, App.app.renderer.height / 2)
-    );
-    this.container.addChild(ennemy.container);
+  async addEnemy(type = 'basic') {
+    let enemy;
+    switch (type) {
+      case 'basic':
+        enemy = new EnemyBasic(200, 0);
+        this.container.addChild(enemy.container);
+        this.enemies.push(enemy);
+        break;
+      case 'tank':
+        enemy = new EnemyTank(400, 0);
+        this.container.addChild(enemy.container);
+        this.enemies.push(enemy);
+        break;
+      case 'fast':
+        enemy = new EnemyFast(600, 0);
+        this.container.addChild(enemy.container);
+        this.enemies.push(enemy);
+        break;
+      default:
+        console.error("Type d'ennemi inconnu");
+    }
   }
 
   async showScene() {
@@ -37,7 +60,7 @@ export class Scene {
     );
     const road = new PIXI.Sprite(roadSprite);
     road.width = App.app.renderer.width;
-    road.height = App.app.renderer.height;
+    road.height = 1500;
     road.y = App.app.renderer.height - road.height;
 
     this.container.addChild(road);
@@ -46,8 +69,15 @@ export class Scene {
 
   getRoadHeight() {
     if (this.road) {
-      return this.road.getLocalBounds().height;
+      console.log(this.road.y + this.road.height);
+      return this.road.y + this.road.height;
     }
     return 0;
+  }
+
+  update(delta) {
+    for (const enemy of this.enemies) {
+      enemy.update(delta, this.getRoadHeight(), 10);
+    }
   }
 }

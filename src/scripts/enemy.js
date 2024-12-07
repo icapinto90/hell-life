@@ -2,19 +2,23 @@ import * as PIXI from 'pixi.js';
 import { App } from './app';
 
 export class Enemy {
-  constructor(x = 0, y = 0, speed = 1, health = 100) {
+  constructor(x = 0, y = 0, speed = 1.5, health = 100) {
     this.container = new PIXI.Container();
     this.container.interactive = true;
+    this.enemy = null;
     this.x = x;
     this.y = y;
     this.speed = speed;
     this.health = health;
+    this.vy = 0; // Vitesse verticale initiale
+    this.gravity = 0.5; // Force gravitationnelle
+    this.grounded = false; // Indicateur si l'ennemi est au sol
   }
 
   chargeEnemy(texture) {
     this.enemy = new PIXI.AnimatedSprite(texture);
     this.enemy.anchor.set(0.5);
-    this.enemy.animationSpeed = 0.1; // Vitesse de l'animation
+    this.enemy.animationSpeed = 0.5; // Vitesse de l'animation
     this.enemy.play(); // Lance l'animation en boucle
     this.enemy.width = 150;
     this.enemy.height = 150;
@@ -22,8 +26,53 @@ export class Enemy {
     App.app.stage.addChild(this.container);
   }
 
-  update(delta) {
-    this.x -= this.speed * delta;
+  launchWalkingAnimation() {
+    if (this.animations.walking && this.animations.walking.length > 0) {
+      this.textures = this.animations.walking;
+      this.enemy.play();
+    } else {
+      console.error(
+        "Erreur : l'animation de marche est manquante ou indéfinie."
+      );
+    }
+  }
+
+  update(delta, ground) {
+    if (!this.enemy) {
+      return;
+    }
+    // Appliquer la gravité si l'ennemi n'est pas au sol
+    if (!this.grounded) {
+      this.vy += this.gravity; // Augmente la vitesse verticale
+      this.y += this.vy; // Met à jour la position verticale
+      console.log('vy', this.vy);
+    }
+    this.launchWalkingAnimation();
+
+    // Détecter la collision avec le sol
+    this.checkCollisionWithGround(ground);
+
+    if (App.app.player.character.x > this.x) {
+      this.x += this.speed;
+    } else {
+      this.x -= this.speed;
+    }
+    // Appliquer les nouvelles coordonnées au conteneur
+    this.container.x = this.x;
+    this.container.y = this.y;
+  }
+
+  checkCollisionWithGround(ground) {
+    const enemyBottom = this.y + this.enemy.height;
+    const groundTop = ground;
+
+    if (enemyBottom >= groundTop) {
+      this.y = groundTop - this.enemy.height; // Positionner l'ennemi sur le sol
+      this.grounded = true;
+      this.vy = 0; // Réinitialiser la vitesse verticale
+    } else {
+      this.grounded = false;
+    }
   }
 
   takeDamage(amount) {
