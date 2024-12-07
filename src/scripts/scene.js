@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { App } from './app.js';
+import { EnemyBasic } from './enemyBasic.js';
 
 export class Scene {
   constructor() {
@@ -7,6 +8,15 @@ export class Scene {
     this.container.interactive = true;
     this.scene = null;
     this.showScene();
+    this.loadEnnemy();
+    App.app.stage.addChild(this.container);
+  }
+
+  async loadEnnemy() {
+    const ennemy = new EnemyBasic(
+      (App.app.renderer.width / 2, App.app.renderer.height / 2)
+    );
+    this.container.addChild(ennemy.container);
   }
 
   async showScene() {
@@ -32,13 +42,12 @@ export class Scene {
 
     this.container.addChild(road);
     this.road = road;
-    
+  }
 
+  getRoadHeight() {
+    if (this.road) {
+      return this.road.getLocalBounds().height;
     }
-    getRoadHeight(){
-        if (this.road){
-            return this.road.getLocalBounds().height;
-        }
-        return 0;
+    return 0;
   }
 }
