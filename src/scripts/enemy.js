@@ -62,7 +62,7 @@ export class Enemy {
     // Détecter la collision avec le sol
     this.checkCollisionWithGround(ground);
     if (
-      App.app.player.character.x > this.x - 50 &&
+      App.app.player.character.x > this.x - 200 &&
       App.app.player.character.x < this.x + 50 &&
       !this.attacking
     ) {
