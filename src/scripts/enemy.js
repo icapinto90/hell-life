@@ -1,5 +1,5 @@
-import * as PIXI from 'pixi.js';
-import { App } from './app';
+import * as PIXI from "pixi.js";
+import { App } from "./app";
 
 export class Enemy {
   constructor(x = 0, y = 0, speed = 1.5, health = 100) {
@@ -15,6 +15,7 @@ export class Enemy {
     this.grounded = false; // Indicateur si l'ennemi est au sol
     this.attacking = false;
     this.animations = {};
+    this.movingleft = false;
   }
 
   chargeEnemy(texture) {
@@ -29,10 +30,17 @@ export class Enemy {
   }
 
   launchWalkingAnimation() {
+    if (this.enemy.textures === this.animations.walking) return;
     if (this.animations.walking && this.animations.walking.length > 0) {
       this.enemy.textures = this.animations.walking;
+      this.enemy.animationSpeed = this.speed / 10; // Ajuster la vitesse de l'animation
       this.enemy.play();
-      console.log('walking');
+      console.log(
+        "walking with speed:",
+        this.speed,
+        "animationSpeed:",
+        this.enemy.animationSpeed
+      );
     } else {
       console.error(
         "Erreur : l'animation de marche est manquante ou indéfinie."
@@ -48,23 +56,14 @@ export class Enemy {
     if (!this.grounded) {
       this.vy += this.gravity; // Augmente la vitesse verticale
       this.y += this.vy; // Met à jour la position verticale
-      console.log('vy', this.vy);
+      console.log("vy", this.vy);
     }
 
     // Détecter la collision avec le sol
     this.checkCollisionWithGround(ground);
-
-    if (App.app.player.character.x > this.x && !this.attacking) {
-      this.x += this.speed;
-
-      this.launchWalkingAnimation();
-    } else if (App.app.player.character.x < this.x && !this.attacking) {
-      this.x -= this.speed;
-      this.launchWalkingAnimation();
-    }
     if (
-      App.app.player.character.x > this.x - 100 &&
-      App.app.player.character.x < this.x + 100 &&
+      App.app.player.character.x > this.x - 50 &&
+      App.app.player.character.x < this.x + 50 &&
       !this.attacking
     ) {
       this.attacking = true;
@@ -73,11 +72,26 @@ export class Enemy {
       //met en pause jusqu'à la fin de l'animation
 
       setTimeout(() => {
-        console.log('fin attaque');
+        console.log("fin attaque");
         this.attacking = false;
-        console.log('attacking', this.attacking);
+        console.log("attacking", this.attacking);
       }, 450);
+    } else if (App.app.player.character.x > this.x && !this.attacking) {
+      this.x += this.speed;
+      if (this.movingleft === true) {
+        this.enemy.scale.x *= -1;
+      }
+      this.movingleft = false;
+      this.launchWalkingAnimation();
+    } else if (App.app.player.character.x < this.x && !this.attacking) {
+      if (this.movingleft === false) {
+        this.enemy.scale.x *= -1;
+        this.movingleft = true;
+      }
+      this.x -= this.speed;
+      this.launchWalkingAnimation();
     }
+
     // Appliquer les nouvelles coordonnées au conteneur
     this.container.x = this.x;
     this.container.y = this.y;
