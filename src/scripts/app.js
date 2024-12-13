@@ -17,6 +17,11 @@ class GameApplication {
     this.player = new Player();
     this.app.stage.addChild(this.player.container);
   }
+
+  static async getScene() {
+    await App.initPromise; // Attendre que l'application soit complètement initialisée
+    return App.scene; // Retourne la scène initialisée
+  }
 }
 
 export const App = new GameApplication();

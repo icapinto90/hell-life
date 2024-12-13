@@ -20,6 +20,7 @@ export class Scene {
     nuages.x = 0;
     nuages.y = 0;
     this.container.addChild(nuages);
+
     //ajout de la route
     const roadSprite = await PIXI.Assets.load(
       'src/Assets/Background/PNG/Postapocalypce1/Bright/road.png'
@@ -27,6 +28,14 @@ export class Scene {
     const road = new PIXI.Sprite(roadSprite);
     road.width = App.app.renderer.width;
     road.height = App.app.renderer.height;
+    road.y = App.app.renderer.height - road.height;
+
     this.container.addChild(road);
+    this.road = road;
+    this.roadContour = await this.getRouteContour('src/Assets/Background/PNG/Postapocalypce1/Bright/road.png');
+
+    }
+
+  
   }
-}
+
