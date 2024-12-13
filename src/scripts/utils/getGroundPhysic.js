@@ -14,8 +14,9 @@ export function getGroundPhysic(sprite) {
     for (let y = 0; y < canvas.height; y++) {
       const alpha = imageData[(y * canvas.width + x) * 4 + 3]; // Canal alpha
       if (alpha > 0) {
+        const height = canvas.height - window.innerHeight - 50; // Hauteur relative
         // Trouver le premier pixel opaque
-        contour.push({ x: x, y: y });
+        contour.push({ x: x, y: y - height });
         break;
       }
     }

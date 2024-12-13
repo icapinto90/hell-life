@@ -1,12 +1,13 @@
-    import * as PIXI from 'pixi.js';
-    import { App } from './app.js';
-    import { Scene } from './scene.js';
-    import { groupD8 } from 'pixi.js';
+import * as PIXI from "pixi.js";
+import { App } from "./app.js";
+import { Scene } from "./scene.js";
+import { groupD8 } from "pixi.js";
+import { getGroundYAtX } from "./utils/getGroundYAtX.js";
 
-    export class Player {
-        constructor() {
-            this.container = new PIXI.Container();
-            this.container.interactive = true;
+export class Player {
+  constructor() {
+    this.container = new PIXI.Container();
+    this.container.interactive = true;
 
             this.speed = 5;
             this.jumpSpeed = 10;
@@ -19,87 +20,91 @@
             this.animations = {};
             this.currentState = 'idle';
 
-            this.character = null; 
-            this.setUpControls();
-            this.chargePlayer();
-        
-        }
-        
+    this.character = null;
+    this.setUpControls();
+    this.chargePlayer();
+  }
 
-        async chargePlayer() {
-            console.log('groupeD8', groupD8);
-            this.animations.idle = await this.loadFrame('src/Assets/Character/Hero/PNG/PNG Sequences/Idle/0_Fallen_Angels_Idle_', 18);
-            this.animations.walking = await this.loadFrame('src/Assets/Character/Hero/PNG/PNG Sequences/Walking/0_Fallen_Angels_Walking_', 24);
-            this.animations.running = await this.loadFrame('src/Assets/Character/Hero/PNG/PNG Sequences/Running/0_Fallen_Angels_Running_', 12);
-            this.animations.jumping = await this.loadFrame('src/Assets/Character/Hero/PNG/PNG Sequences/Jump Start/0_Fallen_Angels_Jump Start_', 6);
-            this.animations.fallingDown = await this.loadFrame('src/Assets/Character/Hero/PNG/PNG Sequences/Falling Down/0_Fallen_Angels_Falling Down_', 6)
-            this.animations.lowered = await this.loadFrame('')
-            
+  async chargePlayer() {
+    console.log("groupeD8", groupD8);
+    this.animations.idle = await this.loadFrame(
+      "src/Assets/Character/Hero/PNG/PNG Sequences/Idle/0_Fallen_Angels_Idle_",
+      18
+    );
+    this.animations.walking = await this.loadFrame(
+      "src/Assets/Character/Hero/PNG/PNG Sequences/Walking/0_Fallen_Angels_Walking_",
+      24
+    );
+    this.animations.running = await this.loadFrame(
+      "src/Assets/Character/Hero/PNG/PNG Sequences/Running/0_Fallen_Angels_Running_",
+      12
+    );
+    this.animations.jumping = await this.loadFrame(
+      "src/Assets/Character/Hero/PNG/PNG Sequences/Jump Start/0_Fallen_Angels_Jump Start_",
+      6
+    );
+    this.animations.fallingDown = await this.loadFrame(
+      "src/Assets/Character/Hero/PNG/PNG Sequences/Falling Down/0_Fallen_Angels_Falling Down_",
+      6
+    );
+    this.animations.lowered = await this.loadFrame("");
 
-            this.character = new PIXI.AnimatedSprite(this.animations.idle); 
-            this.character.width = 150;
-            this.character.height = 150;
+    this.character = new PIXI.AnimatedSprite(this.animations.idle);
+    this.character.width = 150;
+    this.character.height = 150;
 
-            this.character.animationSpeed = 0.2;
-            this.character.play();
+    this.character.animationSpeed = 0.2;
+    this.character.play();
 
-            this.character.x = 20;
-            this.character.y = this.groundY;
+    this.character.x = 20;
+    this.character.y = this.groundY;
 
-            //const roadHeight = CurrentScene.getRoadHeight(); // Appeler la méthode pour obtenir la hauteur réelle
-            //console.log('Hauteur réelle de la route :', roadHeight);
+    //const roadHeight = CurrentScene.getRoadHeight(); // Appeler la méthode pour obtenir la hauteur réelle
+    //console.log('Hauteur réelle de la route :', roadHeight);
 
-            this.container.addChild(this.character);
+    this.container.addChild(this.character);
 
-            
-            App.app.ticker.add(() => {
-                this.update(); 
-            });
+    App.app.ticker.add(() => {
+      this.update();
+    });
+  }
 
-            
-        }
+  async loadFrame(basePath, frameCount) {
+    const frames = [];
+    for (let i = 1; i <= frameCount; i++) {
+      const frame = `${basePath}${i}.png`;
 
-        async loadFrame(basePath, frameCount) {
-            const frames = [];
-            for (let i = 1; i <= frameCount; i++) {
-                const frame = `${basePath}${i}.png`;
-                
-                try {
-                    const texture = await PIXI.Assets.load(frame); 
-                    frames.push(texture);
-                } catch (error) {  
-                
-                }
-            }
-            return frames;
-        }
+      try {
+        const texture = await PIXI.Assets.load(frame);
+        frames.push(texture);
+      } catch (error) {}
+    }
+    return frames;
+  }
 
+  setUpControls() {
+    window.addEventListener("keydown", (event) => {
+      this.keys[event.key] = true;
 
-        setUpControls() {
-            window.addEventListener('keydown', (event) => {
-                this.keys[event.key] = true;
-        
-                
-                if ((event.key === 'ArrowUp' || event.key === 'w') && !this.isJumping) {
-                    this.isJumping = true;
-                    this.velocityY = -this.jumpSpeed; 
-                    this.setAnimation('jumping');
-                }
-            });
-        
-            window.addEventListener('keyup', (event) => {
-                this.keys[event.key] = false;
-            });
-        }
+      if ((event.key === "ArrowUp" || event.key === "w") && !this.isJumping) {
+        this.isJumping = true;
+        this.velocityY = -this.jumpSpeed;
+        this.setAnimation("jumping");
+      }
+    });
 
-        
-        setAnimation(state) {
-            if (this.currentState !== state) {
-                this.currentState = state;
-                this.character.textures = this.animations[state];
-                this.character.gotoAndPlay(0); // redemarre animation
-            }
-        }
+    window.addEventListener("keyup", (event) => {
+      this.keys[event.key] = false;
+    });
+  }
+
+  setAnimation(state) {
+    if (this.currentState !== state) {
+      this.currentState = state;
+      this.character.textures = this.animations[state];
+      this.character.gotoAndPlay(0); // redemarre animation
+    }
+  }
 
         update() {
             if (this.character) {
