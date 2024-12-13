@@ -14,7 +14,7 @@
             this.isJumping = false;
             this.isFalling = false;
             this.velocityY = 0;
-            this.groundY = 370;
+            this.groundY = 300;
             this.keys = {};
             this.animations = {};
             this.currentState = 'idle';
@@ -127,9 +127,9 @@
                 }
         
                 // Empêcher de sortir de l'écran
-                if (this.character.x < 0) this.character.x = 0;
-                if (this.character.x > App.app.renderer.width - this.character.width) {
-                    this.character.x = App.app.renderer.width - this.character.width;
+                if (this.character.x < -38) this.character.x = -38;
+                if (this.character.x > App.app.renderer.width + 38 - this.character.width) {
+                    this.character.x = App.app.renderer.width - this.character.width + 38;
                 }
         
                 // Gestion des animations si le personnage est immobile

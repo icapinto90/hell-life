@@ -20,6 +20,6 @@ export function getGroundPhysic(sprite) {
       }
     }
   }
-
+  
   return contour;
 }

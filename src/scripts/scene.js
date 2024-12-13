@@ -4,6 +4,7 @@ import { EnemyBasic } from "./enemyBasic.js";
 import { EnemyFast } from "./enemyFast.js";
 import { EnemyTank } from "./enemyTank.js";
 import { getGroundPhysic } from "./utils/getGroundPhysic.js";
+import { Player } from "./player.js"; 
 
 export class Scene {
   constructor() {
@@ -69,6 +70,11 @@ export class Scene {
 
     this.container.addChild(road);
     this.road = road;
+
+    this.player = new Player();
+    App.app.player = this.player;
+    App.app.stage.addChild(this.player.container);
+
   }
 
   getRoadHeight() {
