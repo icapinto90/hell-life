@@ -83,5 +83,7 @@ export class Scene {
     for (const enemy of this.enemies) {
       enemy.update(delta, this.pointMap, 10);
     }
+
+  
   }
-}
+
