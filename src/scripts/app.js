@@ -15,6 +15,7 @@ class GameApplication {
     this.app.stage.interactive = true;
     this.app.stage.addChild(this.scenes.container);
     this.player = new Player();
+    this.app.player = this.player;
     this.app.stage.addChild(this.player.container);
   }
 
