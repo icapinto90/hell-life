@@ -61,7 +61,7 @@ export class Scene {
     );
     const road = new PIXI.Sprite(roadSprite);
     road.width = App.app.renderer.width;
-    road.height = 1800;
+    road.height = App.app.renderer.height;
     road.y = App.app.renderer.height - road.height;
     console.log(road.texture.source.resource);
     // sprite.texture.baseTexture.resource.source;
@@ -83,7 +83,5 @@ export class Scene {
     for (const enemy of this.enemies) {
       enemy.update(delta, this.pointMap, 10);
     }
-
-  
   }
-
+}
