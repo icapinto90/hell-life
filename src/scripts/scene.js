@@ -1,8 +1,9 @@
-import * as PIXI from 'pixi.js';
-import { App } from './app.js';
-import { EnemyBasic } from './enemyBasic.js';
-import { EnemyFast } from './enemyFast.js';
-import { EnemyTank } from './enemyTank.js';
+import * as PIXI from "pixi.js";
+import { App } from "./app.js";
+import { EnemyBasic } from "./enemyBasic.js";
+import { EnemyFast } from "./enemyFast.js";
+import { EnemyTank } from "./enemyTank.js";
+import { getGroundPhysic } from "./utils/getGroundPhysic.js";
 
 export class Scene {
   constructor() {
@@ -11,28 +12,28 @@ export class Scene {
     this.scene = null;
     this.enemies = [];
     this.showScene();
-    this.addEnemy('basic');
-    this.addEnemy('fast');
-    this.addEnemy('tank');
+    this.addEnemy("basic");
+    this.addEnemy("fast");
+    this.addEnemy("tank");
 
     App.app.stage.addChild(this.container);
     App.app.ticker.add((delta) => this.update(delta));
   }
 
-  async addEnemy(type = 'basic') {
+  async addEnemy(type = "basic") {
     let enemy;
     switch (type) {
-      case 'basic':
+      case "basic":
         enemy = new EnemyBasic(200, 0);
         this.container.addChild(enemy.container);
         this.enemies.push(enemy);
         break;
-      case 'tank':
+      case "tank":
         enemy = new EnemyTank(400, 0);
         this.container.addChild(enemy.container);
         this.enemies.push(enemy);
         break;
-      case 'fast':
+      case "fast":
         enemy = new EnemyFast(600, 0);
         this.container.addChild(enemy.container);
         this.enemies.push(enemy);
@@ -45,7 +46,7 @@ export class Scene {
   async showScene() {
     //ajout du background
     const background = await PIXI.Assets.load(
-      'src/Assets/Background/PNG/Postapocalypce1/Bright/clouds1.png'
+      "src/Assets/Background/PNG/Postapocalypce1/Bright/clouds1.png"
     );
     const nuages = new PIXI.Sprite(background);
     nuages.width = App.app.renderer.width;
@@ -56,12 +57,15 @@ export class Scene {
 
     //ajout de la route
     const roadSprite = await PIXI.Assets.load(
-      'src/Assets/Background/PNG/Postapocalypce1/Bright/road.png'
+      "src/Assets/Background/PNG/Postapocalypce1/Bright/road.png"
     );
     const road = new PIXI.Sprite(roadSprite);
     road.width = App.app.renderer.width;
-    road.height = 1500;
+    road.height = 1800;
     road.y = App.app.renderer.height - road.height;
+    console.log(road.texture.source.resource);
+    // sprite.texture.baseTexture.resource.source;
+    this.pointMap = getGroundPhysic(road);
 
     this.container.addChild(road);
     this.road = road;
@@ -77,7 +81,7 @@ export class Scene {
 
   update(delta) {
     for (const enemy of this.enemies) {
-      enemy.update(delta, this.getRoadHeight(), 10);
+      enemy.update(delta, this.pointMap, 10);
     }
   }
 }

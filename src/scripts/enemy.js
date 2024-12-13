@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import { App } from "./app";
+import { getGroundYAtX } from "./utils/getGroundYAtX";
 
 export class Enemy {
   constructor(x = 0, y = 0, speed = 1.5, health = 100) {
@@ -48,44 +49,55 @@ export class Enemy {
     }
   }
 
-  async update(delta, ground) {
+  async update(delta, groundContour) {
     if (!this.enemy) {
       return;
     }
-    // Appliquer la gravité si l'ennemi n'est pas au sol
-    if (!this.grounded) {
+
+    // Trouver la hauteur du sol à la position X de l'ennemi
+    const groundY = getGroundYAtX(groundContour, this.x);
+    console.log("groundY", groundY);
+
+    // Appliquer la gravité si l'ennemi est en l'air
+    if (this.y < groundY) {
+      this.grounded = false;
       this.vy += this.gravity; // Augmente la vitesse verticale
       this.y += this.vy; // Met à jour la position verticale
       console.log("vy", this.vy);
+    } else {
+      // Si l'ennemi est au sol
+      this.grounded = true;
+      this.y = groundY; // Ajuste la position de l'ennemi au niveau du sol
+      this.vy = 0; // Réinitialise la vitesse verticale
     }
 
-    // Détecter la collision avec le sol
-    this.checkCollisionWithGround(ground);
+    // Gérer l'attaque
     if (
-      App.app.player.character.x > this.x - 200 &&
-      App.app.player.character.x < this.x + 50 &&
+      App.app.player.character.x > this.x - 20 - this.enemy.width &&
+      App.app.player.character.x < this.x + 20 &&
       !this.attacking
     ) {
       this.attacking = true;
       this.launchAttackAnimation();
 
-      //met en pause jusqu'à la fin de l'animation
-
+      // Met en pause jusqu'à la fin de l'animation
       setTimeout(() => {
         console.log("fin attaque");
         this.attacking = false;
         console.log("attacking", this.attacking);
       }, 450);
     } else if (App.app.player.character.x > this.x && !this.attacking) {
+      // Déplacement vers la droite
       this.x += this.speed;
       if (this.movingleft === true) {
-        this.enemy.scale.x *= -1;
+        this.enemy.scale.x *= -1; // Inverser la direction
       }
       this.movingleft = false;
       this.launchWalkingAnimation();
     } else if (App.app.player.character.x < this.x && !this.attacking) {
+      // Déplacement vers la gauche
       if (this.movingleft === false) {
-        this.enemy.scale.x *= -1;
+        this.enemy.scale.x *= -1; // Inverser la direction
         this.movingleft = true;
       }
       this.x -= this.speed;
