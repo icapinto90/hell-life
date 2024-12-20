@@ -75,19 +75,16 @@ export class Scene {
     App.app.player = this.player;
     App.app.stage.addChild(this.player.container);
 
+
   }
 
-  getRoadHeight() {
-    if (this.road) {
-      console.log(this.road.y + this.road.height);
-      return this.road.y + this.road.height;
-    }
-    return 0;
-  }
+
 
   update(delta) {
     for (const enemy of this.enemies) {
       enemy.update(delta, this.pointMap, 10);
     }
+    if (this.player) {
+      this.player.update(this.pointMap, 10);
   }
-}
+}}

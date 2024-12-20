@@ -55,7 +55,7 @@ export class Enemy {
     }
 
     // Trouver la hauteur du sol à la position X de l'ennemi
-    const groundY = getGroundYAtX(groundContour, this.x);
+    const groundY = 375;  
 
     // Appliquer la gravité si l'ennemi est en l'air
     if (this.y < groundY) {
