@@ -81,6 +81,7 @@ export class Enemy {
     //if dead return
 
     if (!this.enemy || this.attacking || !player || this.dead) return;
+    // Trouver la hauteur du sol à la position X de l'ennemi
 
     // Gérer la gravité et le sol
     const groundY = getGroundYAtX(groundContour, this.x);

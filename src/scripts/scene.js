@@ -142,9 +142,6 @@ export class Scene {
     this.road = road;
   }
 
-  getRoadHeight() {
-    return this.road ? this.road.y + this.road.height : 0;
-  }
 
   update(delta) {
     if (!this.player.character) return;
@@ -203,5 +200,7 @@ export class Scene {
     setTimeout(() => {
       enemy.attacking = false;
     }, 450);
+    if (this.player) {
+      this.player.update(this.pointMap, 10);
   }
-}
+}}
