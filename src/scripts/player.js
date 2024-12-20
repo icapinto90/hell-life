@@ -8,7 +8,6 @@ export class Player {
   constructor() {
     this.container = new PIXI.Container();
     this.container.interactive = true;
-
             this.speed = 5;
             this.jumpSpeed = 10;
             this.gravity = 0.5;
@@ -23,10 +22,11 @@ export class Player {
             this.movingRight = false;
             this.health = 100;
             this.maxHealth = 100;
-
     this.character = null;
     this.setUpControls();
-    this.chargePlayer();
+    (async () => {
+      await this.chargePlayer();
+    })();
   }
 
   async chargePlayer() {
@@ -185,6 +185,7 @@ setUpControls() {
   }
 
 
+
   update() {
     if (this.character) {
         // Déplacement horizontal
@@ -260,4 +261,4 @@ setUpControls() {
         }
         
    
-   
+ 
