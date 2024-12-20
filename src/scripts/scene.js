@@ -142,9 +142,12 @@ export class Scene {
     this.road = road;
   }
 
-
   update(delta) {
     if (!this.player.character) return;
+
+    if (this.player) {
+      this.player.update(this.pointMap, 10);
+    }
 
     // Mettre à jour tous les ennemis
     for (const enemy of this.enemies) {
@@ -188,6 +191,9 @@ export class Scene {
       this.handleAttack(player, enemy);
     }
   }
+  getRoadHeight() {
+    return this.road ? this.road.y + this.road.height : 0;
+  }
 
   handleAttack(player, enemy) {
     if (enemy.attacking || enemy.dead) return;
@@ -200,7 +206,5 @@ export class Scene {
     setTimeout(() => {
       enemy.attacking = false;
     }, 450);
-    if (this.player) {
-      this.player.update(this.pointMap, 10);
   }
-}}
+}
