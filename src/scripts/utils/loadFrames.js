@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import * as PIXI from "pixi.js";
 
 export async function loadFrames(basePath) {
   const frames = [];
@@ -6,9 +6,8 @@ export async function loadFrames(basePath) {
 
   while (true) {
     // Formater le numéro avec trois chiffres (001, 002, 003, ...)
-    const frameNumber = String(i).padStart(3, '0');
+    const frameNumber = String(i).padStart(3, "0");
     const frame = `${basePath}${frameNumber}.png`;
-    console.log(`Attempting to load frame: ${frame}`);
 
     try {
       const texture = await PIXI.Assets.load(frame);

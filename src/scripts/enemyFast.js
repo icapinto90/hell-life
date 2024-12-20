@@ -31,8 +31,8 @@ export class EnemyFast extends Enemy {
   }
 
   // Mettre à jour l'ennemi
-  update(delta, bounds) {
-    super.update(delta, bounds); // Appel au parent pour le mouvement de base (déplacement)
+  update(delta, bounds, player) {
+    super.update(delta, bounds, player); // Appel au parent pour le mouvement de base (déplacement)
     // Ajouter d'autres logiques pour l'ennemi ici
   }
 }

@@ -3,7 +3,7 @@ export function getGroundPhysic(sprite) {
   canvas.width = sprite.texture.width;
   canvas.height = sprite.texture.height;
   const ctx = canvas.getContext("2d");
-  console.log(sprite);
+
   // Dessiner l'image sur un canvas temporaire
   ctx.drawImage(sprite.texture.source.resource, 0, 0);
 
@@ -21,6 +21,6 @@ export function getGroundPhysic(sprite) {
       }
     }
   }
-  
+
   return contour;
 }

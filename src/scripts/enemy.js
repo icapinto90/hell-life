@@ -17,6 +17,39 @@ export class Enemy {
     this.attacking = false;
     this.animations = {};
     this.movingleft = false;
+    this.maxHealth = health; // Santé maximale
+    this.dead = false;
+  }
+
+  updateHealthBar() {
+    this.healthBar = new PIXI.Graphics();
+    this.healthBarWidth = 100; // Largeur maximale de la barre de vie
+    this.healthBarHeight = 10; // Hauteur de la barre de vie
+
+    // Couleur de la barre en fonction de la santé restante
+    const healthRatio = this.health / this.maxHealth;
+    const healthColor =
+      healthRatio > 0.5 ? 0x00ff00 : healthRatio > 0.25 ? 0xffff00 : 0xff0000;
+
+    // Dessiner la barre de fond (gris)
+
+    this.healthBar.rect(
+      -this.healthBarWidth / 2,
+      -this.enemy.height / 2 - 20, // Position au-dessus de l'ennemi
+      this.healthBarWidth,
+      this.healthBarHeight
+    );
+    this.healthBar.fill(0x444444);
+
+    // Dessiner la barre de santé restante
+    this.healthBar.rect(
+      -this.healthBarWidth / 2,
+      -this.enemy.height / 2 - 20, // Position au-dessus de l'ennemi
+      this.healthBarWidth * healthRatio,
+      this.healthBarHeight
+    );
+    this.healthBar.fill(healthColor);
+    this.container.addChild(this.healthBar); // Ajoute la barre au conteneur de l'ennemi
   }
 
   chargeEnemy(texture) {
@@ -26,6 +59,7 @@ export class Enemy {
     this.enemy.play(); // Lance l'animation en boucle
     this.enemy.width = 150;
     this.enemy.height = 150;
+    this.updateHealthBar();
     this.container.addChild(this.enemy);
     App.app.stage.addChild(this.container);
   }
@@ -36,12 +70,6 @@ export class Enemy {
       this.enemy.textures = this.animations.walking;
       this.enemy.animationSpeed = this.speed / 10; // Ajuster la vitesse de l'animation
       this.enemy.play();
-      console.log(
-        "walking with speed:",
-        this.speed,
-        "animationSpeed:",
-        this.enemy.animationSpeed
-      );
     } else {
       console.error(
         "Erreur : l'animation de marche est manquante ou indéfinie."
@@ -49,73 +77,47 @@ export class Enemy {
     }
   }
 
-  async update(delta, groundContour) {
-    if (!this.enemy) {
-      return;
-    }
+  async update(delta, groundContour, player) {
+    //if dead return
 
-    // Trouver la hauteur du sol à la position X de l'ennemi
+    if (!this.enemy || this.attacking || !player || this.dead) return;
+
+    // Gérer la gravité et le sol
     const groundY = getGroundYAtX(groundContour, this.x);
-
-    // Appliquer la gravité si l'ennemi est en l'air
     if (this.y < groundY) {
       this.grounded = false;
-      this.vy += this.gravity; // Augmente la vitesse verticale
-      this.y += this.vy; // Met à jour la position verticale
-      console.log("vy", this.vy);
+      this.vy += this.gravity;
+      this.y += this.vy;
     } else {
-      // Si l'ennemi est au sol
       this.grounded = true;
-      this.y = groundY; // Ajuste la position de l'ennemi au niveau du sol
-      this.vy = 0; // Réinitialise la vitesse verticale
+      this.y = groundY;
+      this.vy = 0;
     }
-
-    // Gérer l'attaque
-    if (
-      App.app.player.character.x > this.x - 20 - this.enemy.width &&
-      App.app.player.character.x < this.x + 20 &&
-      !this.attacking
-    ) {
-      this.attacking = true;
-      this.launchAttackAnimation();
-
-      // Met en pause jusqu'à la fin de l'animation
-      setTimeout(() => {
-        console.log("fin attaque");
-        this.attacking = false;
-        console.log("attacking", this.attacking);
-      }, 450);
-    } else if (App.app.player.character.x > this.x && !this.attacking) {
-      // Déplacement vers la droite
-      this.x += this.speed;
-      if (this.movingleft === true) {
-        this.enemy.scale.x *= -1; // Inverser la direction
-      }
-      this.movingleft = false;
-      this.launchWalkingAnimation();
-    } else if (App.app.player.character.x < this.x && !this.attacking) {
-      // Déplacement vers la gauche
-      if (this.movingleft === false) {
-        this.enemy.scale.x *= -1; // Inverser la direction
-        this.movingleft = true;
-      }
-      this.x -= this.speed;
-      this.launchWalkingAnimation();
-    }
-
-    // Appliquer les nouvelles coordonnées au conteneur
-    this.container.x = this.x;
-    this.container.y = this.y;
+    this.followObject(player.character);
   }
 
   launchAttackAnimation() {
     if (this.animations.attacking && this.animations.attacking.length > 0) {
       this.enemy.textures = this.animations.attacking;
+      this.enemy.loop = false;
+      this.enemy.animationSpeed = 0.5;
       this.enemy.play();
     } else {
       console.error(
         "Erreur : l'animation d'attaque est manquante ou indéfinie."
       );
+    }
+  }
+
+  launchDieAnimation() {
+    if (this.animations.dying && this.animations.dying.length > 0) {
+      console.log("launchDieAnimation");
+      this.enemy.textures = this.animations.dying;
+      this.enemy.loop = false; // Arrêter l'animation à la fin
+      this.enemy.animationSpeed = 0.3; // Vitesse de l'animation
+      this.enemy.play();
+    } else {
+      console.error("Erreur : l'animation de mort est manquante ou indéfinie.");
     }
   }
 
@@ -132,10 +134,42 @@ export class Enemy {
     }
   }
 
-  takeDamage(amount) {
-    this.health -= amount;
-    if (this.health <= 0) {
-      this.destroy();
+  followObject(object) {
+    if (this.x < object.x) {
+      this.x += this.speed;
+      if (this.movingleft === true) {
+        this.enemy.scale.x *= -1; // Inverser la direction
+      }
+      this.movingleft = false;
+      this.launchWalkingAnimation();
+    } else {
+      // Déplacement vers la gauche
+      if (this.movingleft === false) {
+        this.enemy.scale.x *= -1; // Inverser la direction
+        this.movingleft = true;
+      }
+      this.x -= this.speed;
+      this.launchWalkingAnimation();
     }
+    this.container.x = this.x;
+    this.container.y = this.y;
+  }
+
+  takeDamage(amount) {
+    console.log("takeDamage", amount);
+    this.health -= amount;
+    this.updateHealthBar();
+    this.x += this.movingleft ? 35 : -35;
+    if (this.health <= 0) {
+      this.dead = true;
+      this.launchDieAnimation();
+      setTimeout(() => {
+        this.destroy();
+      }, 2000);
+    }
+  }
+
+  destroy() {
+    this.container.destroy();
   }
 }
