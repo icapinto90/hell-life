@@ -1,8 +1,4 @@
 import * as PIXI from "pixi.js";
-import { App } from "./app.js";
-import { Scene } from "./scene.js";
-import { groupD8 } from "pixi.js";
-import { getGroundYAtX } from "./utils/getGroundYAtX.js";
 
 export class Player {
   constructor() {
@@ -14,7 +10,7 @@ export class Player {
             this.isJumping = false;
             this.isFalling = false;
             this.velocityY = 0;
-            this.groundY = 377;
+            this.groundY = 550;
             this.keys = {};
             this.animations = {};
             this.currentState = 'idle';
@@ -22,6 +18,12 @@ export class Player {
             this.movingRight = false;
             this.health = 100;
             this.maxHealth = 100;
+            this.projectiles = [];
+            this.canShoot = true;
+            this.shootCooldown = 300; // Délai entre chaque tir (en millisecondes)
+            this.projectileSpeed = 10;
+            this.projectileSize = 5;
+
     this.character = null;
     this.setUpControls();
     (async () => {
@@ -79,6 +81,7 @@ export class Player {
     this.container.addChild(this.character);
 
   }
+
   updateHealthBar() {
     const barWidth = 250;
     const barHeight = 10;
@@ -102,7 +105,6 @@ export class Player {
         .fill(fillColor); // Appliquer le remplissage
 }
 
-
   async loadFrame(basePath, frameCount) {
     const frames = [];
     for (let i = 1; i <= frameCount; i++) {
@@ -116,13 +118,56 @@ export class Player {
     return frames;
   }
 
-
-
   setAnimationSpeed(speed) {
     if (this.character) {
         this.character.animationSpeed = speed;
     }
 }
+
+createProjectile() {
+    if (!this.canShoot) return;
+
+    // Créez une nouvelle instance de Graphics
+    const projectile = new PIXI.Graphics()
+        .rect(0, 0, 30, 30)
+        .fill(0xff0000);
+
+    // Position initiale du projectile
+    projectile.x = this.character.x;
+    projectile.y = this.character.y;
+
+    // Direction du projectile basée sur l'orientation du personnage
+    projectile.direction = this.character.scale.x > 0 ? 1 : -1;
+
+    // Ajoutez le projectile à la liste et à la scène
+    this.projectiles.push(projectile);
+    this.container.addChild(projectile);
+
+    // Gérez le délai entre les tirs
+    this.canShoot = false;
+    setTimeout(() => {
+        this.canShoot = true;
+    }, this.shootCooldown);
+}
+
+
+  // Nouvelle méthode pour mettre à jour les projectiles
+  updateProjectiles() {
+    for (let i = this.projectiles.length - 1; i >= 0; i--) {
+      const projectile = this.projectiles[i];
+      projectile.x += this.projectileSpeed * projectile.direction;
+
+      // Supprimer les projectiles hors écran
+      if (
+        projectile.x > window.innerWidth + 50 ||
+        projectile.x < -50
+      ) {
+        this.container.removeChild(projectile);
+        this.projectiles.splice(i, 1);
+      }
+    }
+  }
+
 
 setUpControls() {
   window.addEventListener("keydown", (event) => {
@@ -136,6 +181,9 @@ setUpControls() {
               this.setAnimationSpeed(0.2); // Vitesse par défaut pour le saut
           }
       }
+      if (event.key === "f" || event.key === "F") {
+        this.createProjectile();
+    }
 
       // Détection de l'attaque (barre d'espace)
       if (event.key === " " && !this.isAttacking) {
@@ -173,6 +221,8 @@ setUpControls() {
   window.addEventListener("keyup", (event) => {
       this.keys[event.key] = false;
   });
+
+  
 }
 
 
@@ -184,38 +234,90 @@ setUpControls() {
     }
   }
 
+  checkCollisionsWithEnemies(enemies) {
+    if (!this.character || this.health <= 0) return;
+
+    const playerBounds = this.character.getBounds();
+
+    enemies.forEach((enemy) => {
+        if (enemy.dead) return; // Ignorer les ennemis morts
+
+        const enemyBounds = enemy.enemy.getBounds();
+
+        // Détection de collision
+        if (
+            playerBounds.x < enemyBounds.x + enemyBounds.width &&
+            playerBounds.x + playerBounds.width > enemyBounds.x &&
+            playerBounds.y < enemyBounds.y + enemyBounds.height &&
+            playerBounds.y + playerBounds.height > enemyBounds.y
+        ) {
+            console.log("Collision avec un ennemi détectée !");
+            
+            // Appliquer les conséquences
+            this.takeDamage(10); // Exemple : réduire la santé du joueur de 10
+            enemy.takeDamage(5); // Exemple : réduire la santé de l'ennemi de 5
+        }
+    });
+}
+
+// Réduit la santé du joueur
+takeDamage(amount) {
+    this.health -= amount;
+    console.log(`Le joueur prend ${amount} de dégâts ! Santé restante : ${this.health}`);
+    this.updateHealthBar();
+
+    if (this.health <= 0) {
+        console.log("Le joueur est mort !");
+        // Gérer la mort du joueur ici (exemple : fin du jeu)
+    }
+}
+
+
 
 
   update() {
     if (this.character) {
+        // Largeur réelle de l'écran
+        const screenWidth = window.innerWidth;
+
         // Déplacement horizontal
         if (this.keys['ArrowLeft'] || this.keys['a']) {
-            this.character.x -= this.speed;
+            // Si le joueur atteint le bord gauche, on bloque sa position
+            if (this.character.x - this.character.width / 2 > 0) {
+                this.character.x -= this.speed;
+            } else {
+                this.character.x = this.character.width / 2; // Bloqué à gauche
+            }
 
             if (this.character.scale.x > 0) {
-                this.character.scale.x *= -1;
+                this.character.scale.x *= -1; // Inverser l'orientation
             }
 
             this.movingLeft = true;
             this.movingRight = false;
 
-            // Appliquer la bonne animation
+            // Animation correcte
             if (this.isAttacking) {
                 this.setAnimation('attackingRunning');
             } else if (!this.isJumping) {
                 this.setAnimation('running');
             }
         } else if (this.keys['ArrowRight'] || this.keys['d']) {
-            this.character.x += this.speed;
+            // Si le joueur atteint le bord droit, on bloque sa position
+            if (this.character.x + this.character.width / 2 < screenWidth) {
+                this.character.x += this.speed;
+            } else {
+                this.character.x = screenWidth - this.character.width / 2; // Bloqué à droite
+            }
 
             if (this.character.scale.x < 0) {
-                this.character.scale.x *= -1;
+                this.character.scale.x *= -1; // Inverser l'orientation
             }
 
             this.movingRight = true;
             this.movingLeft = false;
 
-            // Appliquer la bonne animation
+            // Animation correcte
             if (this.isAttacking) {
                 this.setAnimation('attackingRunning');
             } else if (!this.isJumping) {
@@ -241,6 +343,7 @@ setUpControls() {
                 if (!this.isAttacking) this.setAnimation("fallingDown");
             }
 
+            // Empêche le personnage de dépasser le bas de l'écran
             if (this.character.y >= this.groundY) {
                 this.character.y = this.groundY;
                 this.isJumping = false;
@@ -250,15 +353,21 @@ setUpControls() {
                     this.setAnimation("idle");
                 }
             }
-            this.updateHealthBar();
-            
-        }
-    }
 
+            // Empêche le personnage de dépasser le haut de l'écran
+            if (this.character.y - this.character.height / 2 < 0) {
+                this.character.y = this.character.height / 2;
+                this.velocityY = 0; // Stoppe le mouvement vertical
+            }
+        }
+
+        // Mise à jour de la barre de santé
+        this.updateHealthBar();
+        this.updateProjectiles();
+        
+    }
+}
 }
 
- 
-        }
-        
-   
+
  
