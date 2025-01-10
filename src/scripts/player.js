@@ -223,8 +223,7 @@ setUpControls() {
   });
 
   
-}
-
+} 
 
   setAnimation(state) {
     if (this.currentState !== state) {
@@ -236,28 +235,68 @@ setUpControls() {
 
   checkCollisionsWithEnemies(enemies) {
     if (!this.character || this.health <= 0) return;
-
+    
     const playerBounds = this.character.getBounds();
-
+    const isAttacking = this.isAttacking; // État d'attaque du joueur
+    
     enemies.forEach((enemy) => {
-        if (enemy.dead) return; // Ignorer les ennemis morts
+      // Vérifier que enemy existe et n'est pas mort
+      if (!enemy || enemy.dead) return;
+      
+      // Vérifier que enemy.enemy existe avant d'appeler getBounds
+      if (!enemy.enemy) return;
+      
+      try {
+          const enemyBounds = enemy.enemy.getBounds();
+          
+          // Détection de collision
+          if (this.checkOverlap(playerBounds, enemyBounds)) {
+              if (isAttacking) {
+                  enemy.takeDamage(5);
+                  const direction = this.character.scale.x;
+                  enemy.applyKnockback(direction);
+              } 
+              
+          }
+      } catch (error) {
+          console.error("Erreur lors de la vérification des collisions :", error);
+          console.log("Enemy state:", enemy);
+      }
+  });
+}
 
-        const enemyBounds = enemy.enemy.getBounds();
+// Ajoutez ces nouvelles méthodes dans Player.js
+checkOverlap(bounds1, bounds2) {
+    return bounds1.x < bounds2.x + bounds2.width &&
+           bounds1.x + bounds1.width > bounds2.x &&
+           bounds1.y < bounds2.y + bounds2.height &&
+           bounds1.y + bounds1.height > bounds2.y;
+}
 
-        // Détection de collision
-        if (
-            playerBounds.x < enemyBounds.x + enemyBounds.width &&
-            playerBounds.x + playerBounds.width > enemyBounds.x &&
-            playerBounds.y < enemyBounds.y + enemyBounds.height &&
-            playerBounds.y + playerBounds.height > enemyBounds.y
-        ) {
-            console.log("Collision avec un ennemi détectée !");
-            
-            // Appliquer les conséquences
-            this.takeDamage(10); // Exemple : réduire la santé du joueur de 10
-            enemy.takeDamage(5); // Exemple : réduire la santé de l'ennemi de 5
-        }
-    });
+makeInvulnerable() {
+    this.isInvulnerable = true;
+    // Effet visuel de clignotement
+    const blinkInterval = setInterval(() => {
+        this.character.alpha = this.character.alpha === 1 ? 0.5 : 1;
+    }, 100);
+    
+    // Fin de l'invulnérabilité après 1.5 secondes
+    setTimeout(() => {
+        this.isInvulnerable = false;
+        clearInterval(blinkInterval);
+        this.character.alpha = 1;
+    }, 1500);
+}
+
+applyKnockback(direction) {
+    const knockbackForce = 2;
+    const knockbackY = -2; // Petit saut lors du knockback
+    
+    this.character.x += direction * knockbackForce;
+    if (this.isGrounded) {
+        this.velocityY = knockbackY;
+        this.isJumping = true;
+    }
 }
 
 // Réduit la santé du joueur

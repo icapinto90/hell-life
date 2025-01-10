@@ -142,6 +142,7 @@ export class Scene {
     this.road = road;
   }
 
+
   update(delta) {
     if (!this.player.character) return;
 
@@ -155,6 +156,7 @@ export class Scene {
       enemy.update(delta, this.pointMap, this.player);
       this.checkPlayerAttacks(enemy);
     }
+    this.player.checkCollisionsWithEnemies(this.enemies);
 
     // Nettoyer les ennemis morts de la liste
     this.enemies = this.enemies.filter((enemy) => !enemy.dead);
