@@ -20,11 +20,6 @@ export class Player {
             this.movingRight = false;
             this.health = 100;
             this.maxHealth = 100;
-            this.projectiles = [];
-            this.canShoot = true;
-            this.shootCooldown = 300; // Délai entre chaque tir (en millisecondes)
-            this.projectileSpeed = 10;
-            this.projectileSize = 5;
 
 
     this.character = null;
@@ -136,49 +131,7 @@ export class Player {
     }
   }
 
-createProjectile() {
-    if (!this.canShoot) return;
 
-    // Créez une nouvelle instance de Graphics
-    const projectile = new PIXI.Graphics()
-        .rect(0, 0, 30, 30)
-        .fill(0xff0000);
-
-    // Position initiale du projectile
-    projectile.x = this.character.x;
-    projectile.y = this.character.y;
-
-    // Direction du projectile basée sur l'orientation du personnage
-    projectile.direction = this.character.scale.x > 0 ? 1 : -1;
-
-    // Ajoutez le projectile à la liste et à la scène
-    this.projectiles.push(projectile);
-    this.container.addChild(projectile);
-
-    // Gérez le délai entre les tirs
-    this.canShoot = false;
-    setTimeout(() => {
-        this.canShoot = true;
-    }, this.shootCooldown);
-}
-
-
-  // Nouvelle méthode pour mettre à jour les projectiles
-  updateProjectiles() {
-    for (let i = this.projectiles.length - 1; i >= 0; i--) {
-      const projectile = this.projectiles[i];
-      projectile.x += this.projectileSpeed * projectile.direction;
-
-      // Supprimer les projectiles hors écran
-      if (
-        projectile.x > window.innerWidth + 50 ||
-        projectile.x < -50
-      ) {
-        this.container.removeChild(projectile);
-        this.projectiles.splice(i, 1);
-      }
-    }
-  }
 
 
 setUpControls() {
@@ -193,9 +146,7 @@ setUpControls() {
           this.setAnimation('jumping');
           this.setAnimationSpeed(0.2); // Vitesse par défaut pour le saut
         }
-      }
-      if (event.key === "f" || event.key === "F") {
-        this.createProjectile();
+      
     }
 
       // Détection de l'attaque (barre d'espace)
