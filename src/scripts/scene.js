@@ -1,11 +1,11 @@
-import * as PIXI from "pixi.js";
-import { App } from "./app.js";
-import { EnemyBasic } from "./enemyBasic.js";
-import { EnemyFast } from "./enemyFast.js";
-import { EnemyTank } from "./enemyTank.js";
-import { getGroundPhysic } from "./utils/getGroundPhysic.js";
-import { Player } from "./player.js";
-import { ScoreSystem } from "./score.js";
+import * as PIXI from 'pixi.js';
+import { App } from './app.js';
+import { EnemyBasic } from './enemyBasic.js';
+import { EnemyFast } from './enemyFast.js';
+import { EnemyTank } from './enemyTank.js';
+import { getGroundPhysic } from './utils/getGroundPhysic.js';
+import { Player } from './player.js';
+import { ScoreSystem } from './score.js';
 
 export class Scene {
   constructor() {
@@ -42,12 +42,12 @@ export class Scene {
 
   initWaveText() {
     this.waveText = new PIXI.Text({
-      text: "",
+      text: '',
       style: {
-        fontFamily: "Arial",
+        fontFamily: 'Arial',
         fontSize: 48,
         fill: 0xffffff,
-        align: "center",
+        align: 'center',
       },
     });
     this.waveText.anchor = new PIXI.Point(0.5, 0.5);
@@ -81,11 +81,11 @@ export class Scene {
 
     const randomType = Math.random();
     if (randomType < 0.5) {
-      this.addEnemy("basic");
+      this.addEnemy('basic');
     } else if (randomType < 0.8) {
-      this.addEnemy("fast");
+      this.addEnemy('fast');
     } else {
-      this.addEnemy("tank");
+      this.addEnemy('tank');
     }
 
     this.enemiesSpawned++;
@@ -97,18 +97,18 @@ export class Scene {
     ); // Les vagues avancées font apparaître plus rapidement
   }
 
-  addEnemy(type = "basic") {
+  addEnemy(type = 'basic') {
     let enemy;
     const spawnX = Math.random() > 0.5 ? -50 : App.app.renderer.width + 50; // Apparaît à gauche ou à droite
     const spawnY = this.getRoadHeight() - 100; // Ajuste pour apparaître sur la route
     switch (type) {
-      case "basic":
+      case 'basic':
         enemy = new EnemyBasic(spawnX, spawnY);
         break;
-      case "tank":
+      case 'tank':
         enemy = new EnemyTank(spawnX, spawnY);
         break;
-      case "fast":
+      case 'fast':
         enemy = new EnemyFast(spawnX, spawnY);
         break;
       default:
@@ -122,7 +122,7 @@ export class Scene {
 
   async showScene() {
     const background = await PIXI.Assets.load(
-      "src/Assets/Background/PNG/Postapocalypce1/Bright/clouds1.png"
+      'src/Assets/Background/PNG/Postapocalypce1/Bright/clouds1.png'
     );
     const nuages = new PIXI.Sprite(background);
     nuages.width = App.app.renderer.width;
@@ -130,11 +130,13 @@ export class Scene {
     this.container.addChild(nuages);
 
     const roadSprite = await PIXI.Assets.load(
-      "src/Assets/Background/PNG/Postapocalypce1/Bright/road.png"
+      'src/Assets/Background/PNG/Postapocalypce1/Bright/road.png'
     );
     const road = new PIXI.Sprite(roadSprite);
     road.width = App.app.renderer.width;
     road.height = App.app.renderer.height;
+    console.log(road.height);
+    console.log(road.width);
     road.y = App.app.renderer.height - road.height;
 
     this.pointMap = getGroundPhysic(road);

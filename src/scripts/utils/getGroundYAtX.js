@@ -4,7 +4,7 @@ export function getGroundYAtX(contour, x) {
 
   // Chercher des points autour de x si le point exact n'est pas trouvé
   const point = contour.find((p) => p.x === roundedX);
-  
+
   if (point) {
     return point.y;
   }
@@ -17,8 +17,5 @@ export function getGroundYAtX(contour, x) {
   if (closestPoints.length > 0) {
     return closestPoints[0].y;
   }
-
-  // Fallback si aucun point n'est trouvé
-  console.warn(`Aucun point de sol trouvé pour x: ${x}`);
   return null;
 }

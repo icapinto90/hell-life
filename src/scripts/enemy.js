@@ -1,6 +1,6 @@
-import * as PIXI from "pixi.js";
-import { App } from "./app";
-import { getGroundYAtX } from "./utils/getGroundYAtX";
+import * as PIXI from 'pixi.js';
+import { App } from './app';
+import { getGroundYAtX } from './utils/getGroundYAtX';
 
 export class Enemy {
   constructor(x = 0, y = 0, speed = 1.5, health = 100) {
@@ -85,15 +85,11 @@ export class Enemy {
 
     // Gérer la gravité et le sol
     const groundY = getGroundYAtX(groundContour, this.x);
-    if (this.y < groundY) {
-      this.grounded = false;
-      this.vy += this.gravity;
-      this.y += this.vy;
-    } else {
-      this.grounded = true;
-      this.y = groundY;
-      this.vy = 0;
-    }
+
+    this.grounded = true;
+    this.y = groundY - this.enemy.height + 66;
+    this.vy = 0;
+
     this.followObject(player.character);
   }
 
@@ -112,7 +108,7 @@ export class Enemy {
 
   launchDieAnimation() {
     if (this.animations.dying && this.animations.dying.length > 0) {
-      console.log("launchDieAnimation");
+      console.log('launchDieAnimation');
       this.enemy.textures = this.animations.dying;
       this.enemy.loop = false; // Arrêter l'animation à la fin
       this.enemy.animationSpeed = 0.3; // Vitesse de l'animation
@@ -157,7 +153,7 @@ export class Enemy {
   }
 
   takeDamage(amount) {
-    console.log("takeDamage", amount);
+    console.log('takeDamage', amount);
     this.health -= amount;
     this.updateHealthBar();
     this.x += this.movingleft ? 5 : -5;
