@@ -397,51 +397,37 @@ takeDamage(amount) {
       }
 
       // Gestion du saut
-      if (this.isJumping) {
-        this.character.y += this.velocityY; // Appliquer la gravité
-        this.velocityY += this.gravity; // Ajouter l'accélération due à la gravité
+    if (this.isJumping) {
+      this.character.y += this.velocityY; // Appliquer la gravité
+      this.velocityY += this.gravity; // Ajouter l'accélération due à la gravité
 
-        if (this.velocityY > 0 && !this.isFalling) {
-          this.isFalling = true;
-          if (!this.isAttacking) this.setAnimation('fallingDown');
+      if (this.velocityY > 0 && !this.isFalling) {
+        this.isFalling = true;
+        if (!this.isAttacking) this.setAnimation('fallingDown');
+      }
+
+      if (this.character.y >= this.groundY) {
+        this.character.y = this.groundY;
+        this.isJumping = false;
+        this.isFalling = false;
+
+        if (!this.isAttacking) {
+          this.setAnimation('idle');
         }
-
-        if (this.character.y >= this.groundY) {
-          this.character.y = this.groundY;
-          this.isJumping = false;
-          this.isFalling = false;
-
-          if (!this.isAttacking) {
-            this.setAnimation('idle');
-          }
-        }
-        
-            // Empêche le personnage de dépasser le bas de l'écran
-            if (this.character.y >= this.groundY) {
-                this.character.y = this.groundY;
-                this.isJumping = false;
-                this.isFalling = false;
-
-                if (!this.isAttacking) {
-                    this.setAnimation("idle");
-                }
-            }
-
-            // Empêche le personnage de dépasser le haut de l'écran
-            if (this.character.y - this.character.height / 2 < 0) {
-                this.character.y = this.character.height / 2;
-                this.velocityY = 0; // Stoppe le mouvement vertical
-            }
-        }
+      }
+      this.updateHealthBar();
+    } else {
+      this.groundY =
+        getGroundYAtX(backgroundGround, this.character.x) -
+        this.character.height +
+        70;
+      this.character.y = this.groundY;
+    }
         
         this.updateHealthBar();
-      } else {
-        this.groundY =
-          getGroundYAtX(backgroundGround, this.character.x) -
-          this.character.height +
-          66;
-        this.character.y = this.groundY;
-      }
+
+        
+      } 
     }
   }
 
