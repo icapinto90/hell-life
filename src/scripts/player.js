@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import { getGroundYAtX } from './utils/getGroundYAtX.js';
+import { App } from './app.js';
 
 export class Player {
   constructor() {
@@ -76,7 +77,7 @@ export class Player {
 
     this.character.anchor.set(0.5, 0.5);
 
-    this.character.x = 20;
+    this.character.x = window.innerWidth / 2;
     this.character.y = this.groundY;
 
     this.healthBar = new PIXI.Graphics();
@@ -266,7 +267,7 @@ setUpControls() {
           // Détection de collision
           if (this.checkOverlap(playerBounds, enemyBounds)) {
               if (isAttacking) {
-                  enemy.takeDamage(5);
+                  enemy.takeDamage(2);
                   const direction = this.character.scale.x;
                   enemy.applyKnockback(direction);
               } 
@@ -321,6 +322,8 @@ takeDamage(amount) {
 
     if (this.health <= 0) {
         console.log("Le joueur est mort !");
+        App.app.destroy();
+        window.location.reload();
         // Gérer la mort du joueur ici (exemple : fin du jeu)
     }
 }

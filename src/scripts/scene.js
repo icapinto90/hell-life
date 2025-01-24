@@ -201,12 +201,12 @@ export class Scene {
 
   handleAttack(player, enemy) {
     if (enemy.attacking || enemy.dead) return;
-    enemy.takeDamage(10);
     if (enemy.dead) {
       this.score.enemyKilled();
     }
     enemy.attacking = true;
     enemy.launchAttackAnimation();
+    player.takeDamage(10);
     setTimeout(() => {
       enemy.attacking = false;
     }, 450);
