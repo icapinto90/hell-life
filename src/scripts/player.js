@@ -327,18 +327,8 @@ takeDamage(amount) {
 
 
   update(backgroundGround) {
-    if (this.character) {
-      // Déplacement horizontal
-      if (this.keys['ArrowLeft'] || this.keys['a']) {
-        this.character.x -= this.speed;
-
-
-        if (this.character.scale.x > 0) {
-          this.character.scale.x *= -1;
-        }
-
-
-  update() {
+      
+  
     if (this.character) {
         // Largeur réelle de l'écran
         const screenWidth = window.innerWidth;
@@ -386,37 +376,7 @@ takeDamage(amount) {
             } else if (!this.isJumping) {
                 this.setAnimation('running');
             }
-        } else {
-            // Pas de mouvement horizontal
-            this.movingLeft = false;
-            this.movingRight = false;
-
-        // Appliquer la bonne animation
-        if (this.isAttacking) {
-          this.setAnimation('attackingRunning');
-        } else if (!this.isJumping) {
-          this.setAnimation('running');
-        }
-      } else if (this.keys['ArrowRight'] || this.keys['d']) {
-        this.character.x += this.speed;
-
-
-
- 
-        if (this.character.scale.x < 0) {
-          this.character.scale.x *= -1;
-        }
-
-        this.movingRight = true;
-        this.movingLeft = false;
-
-        // Appliquer la bonne animation
-        if (this.isAttacking) {
-          this.setAnimation('attackingRunning');
-        } else if (!this.isJumping) {
-          this.setAnimation('running');
-        }
-      } else {
+        }  else {
         // Pas de mouvement horizontal
         this.movingLeft = false;
         this.movingRight = false;
@@ -427,6 +387,12 @@ takeDamage(amount) {
           this.currentState !== 'idle'
         ) {
           this.setAnimation('idle');
+        }
+
+        if (this.isAttacking) {
+          this.setAnimation('attackingRunning');
+        } else if (!this.isJumping) {
+          this.setAnimation('running');
         }
       }
 
@@ -478,5 +444,5 @@ takeDamage(amount) {
       }
     }
   }
-}
+
 
