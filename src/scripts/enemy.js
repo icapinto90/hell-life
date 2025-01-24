@@ -156,7 +156,7 @@ export class Enemy {
     console.log('takeDamage', amount);
     this.health -= amount;
     this.updateHealthBar();
-    this.x += this.movingleft ? 35 : -35;
+    this.x += this.movingleft ? 5 : -5;
     if (this.health <= 0) {
       this.dead = true;
       this.launchDieAnimation();
