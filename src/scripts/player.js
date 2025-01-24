@@ -14,7 +14,7 @@ export class Player {
     this.isJumping = false;
     this.isFalling = false;
     this.velocityY = 0;
-    this.groundY = 377;
+    this.groundY = 0;
     this.keys = {};
     this.animations = {};
     this.currentState = 'idle';
