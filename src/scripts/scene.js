@@ -29,6 +29,7 @@ export class Scene {
       App.app.ticker.add((delta) => this.update(delta));
     })();
   }
+  
 
   initScore() {
     this.score = new ScoreSystem();
@@ -61,13 +62,13 @@ export class Scene {
     this.waveText.text = `Vague ${waveNumber}`;
     this.waveText.visible = true;
     this.generatingWave = true; // Indique que la vague est en cours de génération
-
     // Masquer le texte après 2 secondes
     setTimeout(() => {
       this.waveText.visible = false;
       this.startWave(); // Démarre la nouvelle vague après l'affichage
       this.generatingWave = false; // Indique que la vague est terminée
     }, 2000);
+ 
   }
 
   startWave() {
@@ -146,11 +147,17 @@ export class Scene {
 
 
   update(delta) {
+    
+    let audio = document.getElementById('ambient-music');
+    audio.volume = 0.2;
+    audio.play();
+
     if (!this.player.character) return;
 
     if (this.player) {
       this.player.update(this.pointMap, 10);
     }
+
 
     // Mettre à jour tous les ennemis
     for (const enemy of this.enemies) {
