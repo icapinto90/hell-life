@@ -159,10 +159,15 @@ export class Enemy {
     this.x += this.movingleft ? 5 : -5;
     if (this.health <= 0) {
       this.dead = true;
+ 
       this.launchDieAnimation();
       setTimeout(() => {
         this.destroy();
       }, 2000);
+      let damageSound = document.getElementById('dead_enemy_sound');
+      // Revenir au début du son
+    damageSound.play(); // Jouer le son des dégâts
+    damageSound.volume = 12.0;
     }
   }
 

@@ -18,7 +18,7 @@ export class Player {
             this.currentState = 'idle';
             this.movingLeft = false;
             this.movingRight = false;
-            this.health = 100;
+            this.health = 200;
             this.maxHealth = 100;
 
 
@@ -62,7 +62,16 @@ export class Player {
       'src/Assets/Character/Hero/PNG/PNG Sequences/Slashing in The Air/0_Fallen_Angels_Slashing in The Air_',
       12
     );
+    // Charger ton son
+    let attackSound = new Audio('src/Sounds/SWSH_Whoosh 4 (ID 1796)_LS.mp3');
 
+    // Event listener pour détecter l'appui sur la barre d'espace
+    document.addEventListener('keydown', (event) => {
+      if (event.code === 'Space') {
+          attackSound.currentTime = 0;  // Revenir au début du son
+          attackSound.play();  // Joue le son à partir du début
+      }
+  });
     this.character = new PIXI.AnimatedSprite(this.animations.idle);
     this.character.width = 150;
     this.character.height = 150;
@@ -142,6 +151,12 @@ setUpControls() {
       if ((event.key === 'ArrowUp' || event.key === 'w') && !this.isJumping) {
         this.isJumping = true;
         this.velocityY = -this.jumpSpeed;
+
+        const jumpSound = document.getElementById('jumpSound');
+        jumpSound.currentTime = 0;
+        jumpSound.volume = 0.3;
+        jumpSound.play();
+
         if (!this.isAttacking) {
           this.setAnimation('jumping');
           this.setAnimationSpeed(0.2); // Vitesse par défaut pour le saut
@@ -152,7 +167,6 @@ setUpControls() {
       // Détection de l'attaque (barre d'espace)
       if (event.key === ' ' && !this.isAttacking) {
         this.isAttacking = true;
-
         // Augmenter la vitesse d'animation pour les attaques
         this.setAnimationSpeed(0.3); // Ajustez cette valeur pour accélérer les attaques
 
@@ -267,10 +281,15 @@ applyKnockback(direction) {
 
 // Réduit la santé du joueur
 takeDamage(amount) {
+
     this.health -= amount;
     console.log(`Le joueur prend ${amount} de dégâts ! Santé restante : ${this.health}`);
     this.updateHealthBar();
-
+  // Jouer le son des dégâts
+  let damageSound = document.getElementById('damage-sound');
+  damageSound.currentTime = 0;
+  damageSound.volume = 0.5; // Revenir au début du son
+  damageSound.play(); // Jouer le son des dégâts
     if (this.health <= 0) {
         console.log("Le joueur est mort !");
         App.app.destroy();
