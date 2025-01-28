@@ -14,11 +14,6 @@ class GameApplication {
     this.app.stage.interactive = true;
     this.app.stage.addChild(this.scenes.container);
   }
-
-  static async getScene() {
-    await App.initPromise; 
-    return App.scene;
-  }
 }
 
 export const App = new GameApplication();
