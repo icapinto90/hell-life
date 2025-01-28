@@ -1,16 +1,17 @@
-import * as PIXI from "pixi.js";
-import { App } from "./app.js";
-import { EnemyBasic } from "./enemyBasic.js";
-import { EnemyFast } from "./enemyFast.js";
-import { EnemyTank } from "./enemyTank.js";
-import { getGroundPhysic } from "./utils/getGroundPhysic.js";
-import { Player } from "./player.js";
-import { ScoreSystem } from "./score.js";
+import * as PIXI from 'pixi.js';
+import { App } from './app.js';
+import { EnemyBasic } from './enemyBasic.js';
+import { EnemyFast } from './enemyFast.js';
+import { EnemyTank } from './enemyTank.js';
+import { getGroundPhysic } from './utils/getGroundPhysic.js';
+import { Player } from './player.js';
+import { ScoreSystem } from './score.js';
 
 export class Scene {
   constructor() {
     (async () => {
       this.container = new PIXI.Container();
+      this.player = null;
       this.score = new ScoreSystem();
       this.container.interactive = true;
       this.scene = null;
@@ -30,24 +31,24 @@ export class Scene {
     })();
   }
 
-  initScore() {
-    this.score = new ScoreSystem();
-    this.container.addChild(this.score.container);
-  }
-
   initPlayer() {
     this.player = new Player();
     this.container.addChild(this.player.container);
   }
 
+  initScore() {
+    this.score = new ScoreSystem();
+    this.container.addChild(this.score.container);
+  }
+
   initWaveText() {
     this.waveText = new PIXI.Text({
-      text: "",
+      text: '',
       style: {
-        fontFamily: "Arial",
+        fontFamily: 'Arial',
         fontSize: 48,
         fill: 0xffffff,
-        align: "center",
+        align: 'center',
       },
     });
     this.waveText.anchor = new PIXI.Point(0.5, 0.5);
@@ -55,6 +56,12 @@ export class Scene {
     this.waveText.y = App.app.renderer.height / 2;
     this.waveText.visible = false;
     this.container.addChild(this.waveText);
+  }
+
+  startWave() {
+    this.enemiesSpawned = 0;
+    this.totalEnemiesInWave = this.maxEnemiesInWave + (this.wave - 1) * 3;
+    this.spawnNextEnemy(); // Commence à faire apparaître les ennemis
   }
 
   displayWaveText(waveNumber) {
@@ -69,22 +76,16 @@ export class Scene {
     }, 2000);
   }
 
-  startWave() {
-    this.enemiesSpawned = 0;
-    this.totalEnemiesInWave = this.maxEnemiesInWave + (this.wave - 1) * 3;
-    this.spawnNextEnemy(); // Commence à faire apparaître les ennemis
-  }
-
   spawnNextEnemy() {
     if (this.enemiesSpawned >= this.totalEnemiesInWave) return;
 
     const randomType = Math.random();
     if (randomType < 0.5) {
-      this.addEnemy("basic");
+      this.addEnemy('basic');
     } else if (randomType < 0.8) {
-      this.addEnemy("fast");
+      this.addEnemy('fast');
     } else {
-      this.addEnemy("tank");
+      this.addEnemy('tank');
     }
 
     this.enemiesSpawned++;
@@ -96,18 +97,18 @@ export class Scene {
     ); // Les vagues avancées font apparaître plus rapidement
   }
 
-  addEnemy(type = "basic") {
+  addEnemy(type = 'basic') {
     let enemy;
     const spawnX = Math.random() > 0.5 ? -50 : App.app.renderer.width + 50; // Apparaît à gauche ou à droite
     const spawnY = this.getRoadHeight() - 100; // Ajuste pour apparaître sur la route
     switch (type) {
-      case "basic":
+      case 'basic':
         enemy = new EnemyBasic(spawnX, spawnY);
         break;
-      case "tank":
+      case 'tank':
         enemy = new EnemyTank(spawnX, spawnY);
         break;
-      case "fast":
+      case 'fast':
         enemy = new EnemyFast(spawnX, spawnY);
         break;
       default:
@@ -121,7 +122,7 @@ export class Scene {
 
   async showScene() {
     const background = await PIXI.Assets.load(
-      "src/Assets/Background/PNG/Postapocalypce1/Bright/clouds1.png"
+      'src/Assets/Background/PNG/Postapocalypce1/Bright/clouds1.png'
     );
     const nuages = new PIXI.Sprite(background);
     nuages.width = App.app.renderer.width;
@@ -129,7 +130,7 @@ export class Scene {
     this.container.addChild(nuages);
 
     const roadSprite = await PIXI.Assets.load(
-      "src/Assets/Background/PNG/Postapocalypce1/Bright/road.png"
+      'src/Assets/Background/PNG/Postapocalypce1/Bright/road.png'
     );
     const road = new PIXI.Sprite(roadSprite);
     road.width = App.app.renderer.width;
@@ -144,7 +145,7 @@ export class Scene {
   }
 
   update(delta) {
-    let audio = document.getElementById("ambient-music");
+    let audio = document.getElementById('ambient-music');
     audio.volume = 0.2;
     audio.play();
 
