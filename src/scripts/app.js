@@ -1,6 +1,5 @@
 import { Application } from 'pixi.js';
 import { Scene } from './scene';
-import { Player } from './player';
 
 class GameApplication {
   constructor() {
@@ -17,8 +16,8 @@ class GameApplication {
   }
 
   static async getScene() {
-    await App.initPromise; // Attendre que l'application soit complètement initialisée
-    return App.scene; // Retourne la scène initialisée
+    await App.initPromise; 
+    return App.scene;
   }
 }
 

@@ -1,11 +1,11 @@
-import * as PIXI from 'pixi.js';
-import { App } from './app.js';
-import { EnemyBasic } from './enemyBasic.js';
-import { EnemyFast } from './enemyFast.js';
-import { EnemyTank } from './enemyTank.js';
-import { getGroundPhysic } from './utils/getGroundPhysic.js';
-import { Player } from './player.js';
-import { ScoreSystem } from './score.js';
+import * as PIXI from "pixi.js";
+import { App } from "./app.js";
+import { EnemyBasic } from "./enemyBasic.js";
+import { EnemyFast } from "./enemyFast.js";
+import { EnemyTank } from "./enemyTank.js";
+import { getGroundPhysic } from "./utils/getGroundPhysic.js";
+import { Player } from "./player.js";
+import { ScoreSystem } from "./score.js";
 
 export class Scene {
   constructor() {
@@ -15,21 +15,20 @@ export class Scene {
       this.container.interactive = true;
       this.scene = null;
       this.enemies = [];
-      this.wave = 1; // Commence à la vague 1
-      this.enemiesSpawned = 0; // Nombre d'ennemis apparus dans la vague
-      this.maxEnemiesInWave = 5; // Nombre initial d'ennemis par vague
-      this.waveText = null; // Texte pour afficher la vague
+      this.wave = 1;
+      this.enemiesSpawned = 0;
+      this.maxEnemiesInWave = 5;
+      this.waveText = null;
       this.generatingWave = false; // Indicateur si une vague est en cours de génération
       await this.showScene();
       this.initPlayer();
       this.initScore();
       this.initWaveText(); // Initialisation du texte de vague
-      this.startWave(); // Démarrer la première vague
+      this.startWave();
       App.app.stage.addChild(this.container);
       App.app.ticker.add((delta) => this.update(delta));
     })();
   }
-  
 
   initScore() {
     this.score = new ScoreSystem();
@@ -43,12 +42,12 @@ export class Scene {
 
   initWaveText() {
     this.waveText = new PIXI.Text({
-      text: '',
+      text: "",
       style: {
-        fontFamily: 'Arial',
+        fontFamily: "Arial",
         fontSize: 48,
         fill: 0xffffff,
-        align: 'center',
+        align: "center",
       },
     });
     this.waveText.anchor = new PIXI.Point(0.5, 0.5);
@@ -65,15 +64,14 @@ export class Scene {
     // Masquer le texte après 2 secondes
     setTimeout(() => {
       this.waveText.visible = false;
-      this.startWave(); // Démarre la nouvelle vague après l'affichage
+      this.startWave();
       this.generatingWave = false; // Indique que la vague est terminée
     }, 2000);
- 
   }
 
   startWave() {
     this.enemiesSpawned = 0;
-    this.totalEnemiesInWave = this.maxEnemiesInWave + (this.wave - 1) * 3; // Augmente le nombre d'ennemis à chaque vague
+    this.totalEnemiesInWave = this.maxEnemiesInWave + (this.wave - 1) * 3;
     this.spawnNextEnemy(); // Commence à faire apparaître les ennemis
   }
 
@@ -82,11 +80,11 @@ export class Scene {
 
     const randomType = Math.random();
     if (randomType < 0.5) {
-      this.addEnemy('basic');
+      this.addEnemy("basic");
     } else if (randomType < 0.8) {
-      this.addEnemy('fast');
+      this.addEnemy("fast");
     } else {
-      this.addEnemy('tank');
+      this.addEnemy("tank");
     }
 
     this.enemiesSpawned++;
@@ -98,18 +96,18 @@ export class Scene {
     ); // Les vagues avancées font apparaître plus rapidement
   }
 
-  addEnemy(type = 'basic') {
+  addEnemy(type = "basic") {
     let enemy;
     const spawnX = Math.random() > 0.5 ? -50 : App.app.renderer.width + 50; // Apparaît à gauche ou à droite
     const spawnY = this.getRoadHeight() - 100; // Ajuste pour apparaître sur la route
     switch (type) {
-      case 'basic':
+      case "basic":
         enemy = new EnemyBasic(spawnX, spawnY);
         break;
-      case 'tank':
+      case "tank":
         enemy = new EnemyTank(spawnX, spawnY);
         break;
-      case 'fast':
+      case "fast":
         enemy = new EnemyFast(spawnX, spawnY);
         break;
       default:
@@ -123,7 +121,7 @@ export class Scene {
 
   async showScene() {
     const background = await PIXI.Assets.load(
-      'src/Assets/Background/PNG/Postapocalypce1/Bright/clouds1.png'
+      "src/Assets/Background/PNG/Postapocalypce1/Bright/clouds1.png"
     );
     const nuages = new PIXI.Sprite(background);
     nuages.width = App.app.renderer.width;
@@ -131,7 +129,7 @@ export class Scene {
     this.container.addChild(nuages);
 
     const roadSprite = await PIXI.Assets.load(
-      'src/Assets/Background/PNG/Postapocalypce1/Bright/road.png'
+      "src/Assets/Background/PNG/Postapocalypce1/Bright/road.png"
     );
     const road = new PIXI.Sprite(roadSprite);
     road.width = App.app.renderer.width;
@@ -145,10 +143,8 @@ export class Scene {
     this.road = road;
   }
 
-
   update(delta) {
-    
-    let audio = document.getElementById('ambient-music');
+    let audio = document.getElementById("ambient-music");
     audio.volume = 0.2;
     audio.play();
 
@@ -157,7 +153,6 @@ export class Scene {
     if (this.player) {
       this.player.update(this.pointMap, 10);
     }
-
 
     // Mettre à jour tous les ennemis
     for (const enemy of this.enemies) {
@@ -177,11 +172,10 @@ export class Scene {
     ) {
       if (this.generatingWave) return; // Attendre la fin de la vague actuelle
       this.wave++;
-      this.maxEnemiesInWave += 2; // Augmente la difficulté de manière graduelle
-      this.displayWaveText(this.wave); // Affiche le texte de vague
+      this.maxEnemiesInWave += 2;
+      this.displayWaveText(this.wave);
     }
 
-    // Mettre à jour le score
     this.score.update();
   }
 
@@ -198,7 +192,6 @@ export class Scene {
 
     // Si l'ennemi est à portée des deux côtés
     if (distance < 50 && (isEnemyOnLeft || isEnemyOnRight)) {
-      // Appeler l'attaque
       this.handleAttack(player, enemy);
     }
   }
