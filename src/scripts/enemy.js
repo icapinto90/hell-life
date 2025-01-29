@@ -118,15 +118,21 @@ export class Enemy {
   /**
    * Lance une animation spécifique de l'ennemi.
    * @param {string} animationType - Type d'animation (ex: "walking", "attacking").
+   * @param {number} [speedAnimation=1] - Vitesse de l'animation
    */
-  launchAnimation(animationType) {
-    console.log(animationType);
+  launchAnimation(animationType, speedAnimation = 1) {
+    if (this.dead) return;
+    if (animationType === 'dying') this.dead = true;
     const animation = this.animations[animationType];
-    if (animation && animation.length > 0) {
+    if (
+      animation &&
+      animation.length > 0 &&
+      animation !== this.enemy.textures
+    ) {
+      console.log(`Lancement de l'animation ${animationType}`);
       this.enemy.textures = animation;
       this.enemy.loop = animationType !== 'dying';
-      this.enemy.animationSpeed =
-        animationType === 'attacking' ? 1 : this.speed / 10;
+      this.enemy.animationSpeed = speedAnimation;
       this.enemy.play();
     } else {
       console.error(
@@ -202,12 +208,12 @@ export class Enemy {
     this.updateHealthBar();
     this.positionX += this.movingleft ? 5 : -5;
     if (this.health <= 0) {
+      console.log('Enemy died');
+      this.launchAnimation('dying');
+      setTimeout(() => this.destroy(), 2000);
       const damageSound = document.getElementById('dead_enemy_sound');
       damageSound.play();
       damageSound.volume = 12.0;
-      this.dead = true;
-      this.launchAnimation('dying');
-      setTimeout(() => this.destroy(), 2000);
     }
   }
 

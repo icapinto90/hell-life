@@ -1,7 +1,6 @@
 import { Enemy } from './enemy.js';
 import { loadFrames } from './utils/loadFrames.js';
 
-// Constantes pour les chemins des animations
 const ANIMATION_PATHS = {
   walking:
     'src/Assets/Character/Enemy/Zombie1/Walking/0_Zombie_Villager_Walking_',

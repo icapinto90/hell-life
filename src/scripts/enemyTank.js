@@ -21,10 +21,8 @@ export class EnemyTank extends Enemy {
    * @param {number} y - Position initiale en Y.
    */
   constructor(x, y) {
-    // Appelle le constructeur de la classe parente avec une vitesse réduite et une santé élevée
     super(x, y, 1, 200); // Vitesse de 1, santé de 200
 
-    // Charge les animations après l'initialisation de l'objet
     this.loadAnimations();
   }
 
