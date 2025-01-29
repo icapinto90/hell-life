@@ -1,62 +1,113 @@
-import * as PIXI from "pixi.js";
-import { App } from "./app";
-import { getGroundYAtX } from "./utils/getGroundYAtX";
+import * as PIXI from 'pixi.js';
+import { App } from './app';
+import { getGroundYAtX } from './utils/getGroundYAtX';
 
+const GRAVITY = 0.5;
+const INITIAL_SPEED = 1.5;
+const INITIAL_HEALTH = 100;
+const HEALTH_BAR_WIDTH = 100;
+const HEALTH_BAR_HEIGHT = 10;
+
+/**
+ * Classe abstraite représentant un ennemi dans le jeu.
+ * @abstract
+ * @author Ricardo
+ */
 export class Enemy {
-  constructor(x = 0, y = 0, speed = 1.5, health = 100) {
+  /**
+   * Crée une instance d'Enemy.
+   * @param {number} [x=0] - Position initiale en X.
+   * @param {number} [y=0] - Position initiale en Y.
+   * @param {number} [speed=INITIAL_SPEED] - Vitesse de déplacement.
+   * @param {number} [health=INITIAL_HEALTH] - Points de vie de l'ennemi.
+   */
+  constructor(x = 0, y = 0, speed = INITIAL_SPEED, health = INITIAL_HEALTH) {
+    /** @type {PIXI.Container} Conteneur principal de l'ennemi */
     this.container = new PIXI.Container();
     this.container.interactive = true;
+
+    /** @type {PIXI.AnimatedSprite|null} Sprite animé de l'ennemi */
     this.enemy = null;
-    this.x = x;
-    this.y = y;
+
+    /** @type {number} Position X de l'ennemi */
+    this.positionX = x;
+
+    /** @type {number} Position Y de l'ennemi */
+    this.positionY = y;
+
+    /** @type {number} Vitesse de l'ennemi */
     this.speed = speed;
+
+    /** @type {number} Points de vie actuels de l'ennemi */
     this.health = health;
-    this.vy = 0; // Vitesse verticale initiale
-    this.gravity = 0.5; // Force gravitationnelle
-    this.grounded = false; // Indicateur si l'ennemi est au sol
+
+    /** @type {number} Points de vie maximum */
+    this.maxHealth = health;
+
+    /** @type {number} Vitesse verticale de l'ennemi (pour la gravité) */
+    this.vy = 0;
+
+    /** @type {number} Force gravitationnelle appliquée à l'ennemi */
+    this.gravity = GRAVITY;
+
+    /** @type {boolean} Indique si l'ennemi est au sol */
+    this.grounded = false;
+
+    /** @type {boolean} Indique si l'ennemi est en train d'attaquer */
     this.attacking = false;
+
+    /** @type {Object<string, PIXI.Texture[]>} Stocke les animations de l'ennemi */
     this.animations = {};
+
+    /** @type {boolean} Indique si l'ennemi se déplace vers la gauche */
     this.movingleft = false;
-    this.maxHealth = health; // Santé maximale
+
+    /** @type {boolean} Indique si l'ennemi est mort */
     this.dead = false;
   }
 
   updateHealthBar() {
-    this.healthBar = new PIXI.Graphics();
-    this.healthBarWidth = 100; // Largeur maximale de la barre de vie
-    this.healthBarHeight = 10; // Hauteur de la barre de vie
+    if (!this.healthBar) {
+      this.healthBar = new PIXI.Graphics();
+      this.container.addChild(this.healthBar);
+    }
 
-    // Couleur de la barre en fonction de la santé restante
+    this.healthBar.clear();
+
     const healthRatio = this.health / this.maxHealth;
     const healthColor =
       healthRatio > 0.5 ? 0x00ff00 : healthRatio > 0.25 ? 0xffff00 : 0xff0000;
 
-    // Dessiner la barre de fond (gris)
-
-    this.healthBar.rect(
-      -this.healthBarWidth / 2,
-      -this.enemy.height / 2 - 20, // Position au-dessus de l'ennemi
-      this.healthBarWidth,
-      this.healthBarHeight
+    // Dessiner la barre de fond
+    this.healthBar.beginFill(0x444444);
+    this.healthBar.drawRect(
+      -HEALTH_BAR_WIDTH / 2,
+      -this.enemy.height / 2 - 20,
+      HEALTH_BAR_WIDTH,
+      HEALTH_BAR_HEIGHT
     );
-    this.healthBar.fill(0x444444);
+    this.healthBar.endFill();
 
-    // Dessiner la barre de santé restante
-    this.healthBar.rect(
-      -this.healthBarWidth / 2,
-      -this.enemy.height / 2 - 20, // Position au-dessus de l'ennemi
-      this.healthBarWidth * healthRatio,
-      this.healthBarHeight
+    // Dessiner la barre de santé
+    this.healthBar.beginFill(healthColor);
+    this.healthBar.drawRect(
+      -HEALTH_BAR_WIDTH / 2,
+      -this.enemy.height / 2 - 20,
+      HEALTH_BAR_WIDTH * healthRatio,
+      HEALTH_BAR_HEIGHT
     );
-    this.healthBar.fill(healthColor);
-    this.container.addChild(this.healthBar); // Ajoute la barre au conteneur de l'ennemi
+    this.healthBar.endFill();
   }
 
+  /**
+   * Charge le sprite animé de l'ennemi.
+   * @param {PIXI.Texture[]} texture - Textures pour l'animation.
+   */
   chargeEnemy(texture) {
     this.enemy = new PIXI.AnimatedSprite(texture, 1);
     this.enemy.anchor.set(0.5);
-    this.enemy.animationSpeed = 0.5; // Vitesse de l'animation
-    this.enemy.play(); // Lance l'animation en boucle
+    this.enemy.animationSpeed = 0.5;
+    this.enemy.play();
     this.enemy.width = 150;
     this.enemy.height = 150;
     this.updateHealthBar();
@@ -64,113 +115,111 @@ export class Enemy {
     App.app.stage.addChild(this.container);
   }
 
-  launchWalkingAnimation() {
-    if (this.enemy.textures === this.animations.walking) return;
-    if (this.animations.walking && this.animations.walking.length > 0) {
-      this.enemy.textures = this.animations.walking;
-      this.enemy.animationSpeed = this.speed / 10; // Ajuster la vitesse de l'animation
+  /**
+   * Lance une animation spécifique de l'ennemi.
+   * @param {string} animationType - Type d'animation (ex: "walking", "attacking").
+   * @param {number} [speedAnimation=1] - Vitesse de l'animation
+   */
+  launchAnimation(animationType, speedAnimation = 1) {
+    if (this.dead) return;
+    if (animationType === 'dying') this.dead = true;
+    const animation = this.animations[animationType];
+    if (
+      animation &&
+      animation.length > 0 &&
+      animation !== this.enemy.textures
+    ) {
+      console.log(`Lancement de l'animation ${animationType}`);
+      this.enemy.textures = animation;
+      this.enemy.loop = animationType !== 'dying';
+      this.enemy.animationSpeed = speedAnimation;
       this.enemy.play();
     } else {
       console.error(
-        "Erreur : l'animation de marche est manquante ou indéfinie."
+        `Erreur : l'animation ${animationType} est manquante ou indéfinie.`
       );
     }
   }
 
+  /**
+   * Met à jour l'état de l'ennemi.
+   * @param {number} delta - Temps écoulé depuis la dernière mise à jour.
+   * @param {Array<number>} groundContour - Contour du sol.
+   * @param {Object} player - Joueur à suivre.
+   */
   async update(delta, groundContour, player) {
-    //if dead return
-
     if (!this.enemy || this.attacking || !player || this.dead) return;
-    // Trouver la hauteur du sol à la position X de l'ennemi
 
-    // Gérer la gravité et le sol
-    const groundY = getGroundYAtX(groundContour, this.x);
-
+    const groundY = getGroundYAtX(groundContour, this.positionX);
     this.grounded = true;
-    this.y = groundY - this.enemy.height + 66;
+    this.positionY = groundY - this.enemy.height + 66;
     this.vy = 0;
 
     this.followObject(player.character);
   }
 
-  launchAttackAnimation() {
-    if (this.animations.attacking && this.animations.attacking.length > 0) {
-      this.enemy.textures = this.animations.attacking;
-      this.enemy.loop = false;
-      this.enemy.animationSpeed = 0.5;
-      this.enemy.play();
-    } else {
-      console.error(
-        "Erreur : l'animation d'attaque est manquante ou indéfinie."
-      );
-    }
-  }
-
-  launchDieAnimation() {
-    if (this.animations.dying && this.animations.dying.length > 0) {
-      console.log("launchDieAnimation");
-      this.enemy.textures = this.animations.dying;
-      this.enemy.loop = false; // Arrêter l'animation à la fin
-      this.enemy.animationSpeed = 0.3; // Vitesse de l'animation
-      this.enemy.play();
-    } else {
-      console.error("Erreur : l'animation de mort est manquante ou indéfinie.");
-    }
-  }
-
+  /**
+   * Vérifie la collision de l'ennemi avec le sol.
+   * @param {number} ground - Position du sol en Y.
+   */
   checkCollisionWithGround(ground) {
-    const enemyBottom = this.y + this.enemy.height;
+    const enemyBottom = this.positionY + this.enemy.height;
     const groundTop = ground;
 
     if (enemyBottom >= groundTop) {
-      this.y = groundTop - this.enemy.height; // Positionner l'ennemi sur le sol
+      this.positionY = groundTop - this.enemy.height;
       this.grounded = true;
-      this.vy = 0; // Réinitialiser la vitesse verticale
+      this.vy = 0;
     } else {
       this.grounded = false;
     }
   }
 
+  /**
+   * Fait suivre l'ennemi à un objet (ex: joueur).
+   * @param {Object} object - Objet à suivre (ex: le joueur).
+   */
   followObject(object) {
-    if (this.x < object.x) {
-      this.x += this.speed;
-      if (this.movingleft === true) {
-        this.enemy.scale.x *= -1; // Inverser la direction
+    if (this.positionX < object.x) {
+      this.positionX += this.speed;
+      if (this.movingleft) {
+        this.enemy.scale.x *= -1;
       }
       this.movingleft = false;
-      this.launchWalkingAnimation();
+      this.launchAnimation('walking');
     } else {
-      // Déplacement vers la gauche
-      if (this.movingleft === false) {
-        this.enemy.scale.x *= -1; // Inverser la direction
+      if (!this.movingleft) {
+        this.enemy.scale.x *= -1;
         this.movingleft = true;
       }
-      this.x -= this.speed;
-      this.launchWalkingAnimation();
+      this.positionX -= this.speed;
+      this.launchAnimation('walking');
     }
-    this.container.x = this.x;
-    this.container.y = this.y;
+    this.container.x = this.positionX;
+    this.container.y = this.positionY;
   }
 
+  /**
+   * Inflige des dégâts à l'ennemi.
+   * @param {number} amount - Quantité de dégâts infligés.
+   */
   takeDamage(amount) {
-    console.log("takeDamage", amount);
     this.health -= amount;
     this.updateHealthBar();
-    this.x += this.movingleft ? 5 : -5;
+    this.positionX += this.movingleft ? 5 : -5;
     if (this.health <= 0) {
-      this.dead = true;
-
-      this.launchDieAnimation();
-      setTimeout(() => {
-        this.destroy();
-      }, 2000);
-      let damageSound = document.getElementById("dead_enemy_sound");
-      // Revenir au début du son
-      damageSound.play(); // Jouer le son des dégâts
+      console.log('Enemy died');
+      this.launchAnimation('dying');
+      setTimeout(() => this.destroy(), 2000);
+      const damageSound = document.getElementById('dead_enemy_sound');
+      damageSound.play();
       damageSound.volume = 12.0;
     }
   }
 
+  /**
+   * Détruit l'ennemi et supprime son sprite.
+   */
   destroy() {
     this.container.destroy();
   }

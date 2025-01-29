@@ -1,38 +1,60 @@
-import { Enemy } from "./enemy.js";
-import { loadFrames } from "./utils/loadFrames.js";
+import { Enemy } from './enemy.js';
+import { loadFrames } from './utils/loadFrames.js';
 
+const ANIMATION_PATHS = {
+  walking:
+    'src/Assets/Character/Enemy/Zombie2/Walking/0_Zombie_Villager_Walking_',
+  dying: 'src/Assets/Character/Enemy/Zombie2/Dying/0_Zombie_Villager_Dying_',
+  attacking:
+    'src/Assets/Character/Enemy/Zombie2/Slashing/0_Zombie_Villager_Slashing_',
+  idle: 'src/Assets/Character/Enemy/Zombie2/Idle/0_Zombie_Villager_Idle_',
+};
+
+/**
+ * Classe représentant un ennemi rapide.
+ * @author Ricardo
+ */
 export class EnemyFast extends Enemy {
+  /**
+   * Crée une instance d'EnemyFast.
+   * @param {number} x - Position initiale en X.
+   * @param {number} y - Position initiale en Y.
+   */
   constructor(x, y) {
-    // Appelle le constructeur de la classe parente sans textures (ici on passe un tableau vide ou null)
-    super(x, y, 2, 50);
+    super(x, y, 2, 50); // Vitesse de 2, santé de 50
 
-    // Charge les animations après l'initialisation de l'objet
-    this.loadAnimation();
+    this.loadAnimations();
   }
-  // Charger les animations de l'ennemi (walking, dying, etc.)
-  async loadAnimation() {
+
+  /**
+   * Charge les animations de l'ennemi.
+   * @async
+   * @returns {Promise<void>} Une promesse qui se résout après le chargement des animations.
+   */
+  async loadAnimations() {
     try {
-      this.animations.walking = await loadFrames(
-        "src/Assets/Character/Enemy/Zombie2/Walking/0_Zombie_Villager_Walking_"
-      );
-      this.animations.dying = await loadFrames(
-        "src/Assets/Character/Enemy/Zombie2/Dying/0_Zombie_Villager_Dying_"
-      );
-      this.animations.attacking = await loadFrames(
-        "src/Assets/Character/Enemy/Zombie2/Slashing/0_Zombie_Villager_Slashing_"
-      );
-      this.animations.idle = await loadFrames(
-        "src/Assets/Character/Enemy/Zombie2/Idle/0_Zombie_Villager_Idle_"
-      );
+      const [walking, dying, attacking, idle] = await Promise.all([
+        loadFrames(ANIMATION_PATHS.walking),
+        loadFrames(ANIMATION_PATHS.dying),
+        loadFrames(ANIMATION_PATHS.attacking),
+        loadFrames(ANIMATION_PATHS.idle),
+      ]);
+
+      this.animations = { walking, dying, attacking, idle };
+
+      this.chargeEnemy(this.animations.idle);
     } catch (error) {
-      console.error("Error during loading frames:", error);
+      console.error('Erreur lors du chargement des animations :', error);
     }
-    this.chargeEnemy(this.animations.idle); // Charge l'animation idle par défaut
   }
 
-  // Mettre à jour l'ennemi
+  /**
+   * Met à jour l'ennemi.
+   * @param {number} delta - Temps écoulé depuis la dernière mise à jour.
+   * @param {Array<number>} bounds - Contour du terrain.
+   * @param {Object} player - Référence au joueur.
+   */
   update(delta, bounds, player) {
-    super.update(delta, bounds, player); // Appel au parent pour le mouvement de base (déplacement)
-    // Ajouter d'autres logiques pour l'ennemi ici
+    super.update(delta, bounds, player);
   }
 }

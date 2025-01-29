@@ -184,15 +184,17 @@ export class Scene {
     const player = this.player;
 
     // Vérifier si l'ennemi est à portée d'attaque
-    const isEnemyOnLeft = enemy.x + enemy.width >= player.character.x - 50; // À gauche du joueur
+    const isEnemyOnLeft =
+      enemy.positionX + enemy.width >= player.character.x - 50; // À gauche du joueur
     const isEnemyOnRight =
-      enemy.x <= player.character.x + player.character.width + 50; // À droite du joueur
+      enemy.positionX <= player.character.x + player.character.width + 50; // À droite du joueur
 
     // Calculer la distance horizontale
-    const distance = Math.abs(player.character.x - enemy.x);
+    const distance = Math.abs(player.character.x - enemy.positionX);
 
     // Si l'ennemi est à portée des deux côtés
     if (distance < 50 && (isEnemyOnLeft || isEnemyOnRight)) {
+      console.log('Attaque');
       this.handleAttack(player, enemy);
     }
   }
@@ -206,7 +208,7 @@ export class Scene {
       this.score.enemyKilled();
     }
     enemy.attacking = true;
-    enemy.launchAttackAnimation();
+    enemy.launchAnimation('attacking', 0.5);
     player.takeDamage(10);
     setTimeout(() => {
       enemy.attacking = false;

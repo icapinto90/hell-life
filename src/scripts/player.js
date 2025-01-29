@@ -1,6 +1,6 @@
-import * as PIXI from "pixi.js";
-import { getGroundYAtX } from "./utils/getGroundYAtX.js";
-import { App } from "./app.js";
+import * as PIXI from 'pixi.js';
+import { getGroundYAtX } from './utils/getGroundYAtX.js';
+import { App } from './app.js';
 
 export class Player {
   constructor() {
@@ -15,7 +15,7 @@ export class Player {
     this.groundY = 0;
     this.keys = {}; // Stocke l'état des touches
     this.animations = {}; // Contient les différentes animations du joueur
-    this.currentState = "idle"; // État par défaut du joueur (inactif)
+    this.currentState = 'idle'; // État par défaut du joueur (inactif)
     this.movingLeft = false;
     this.movingRight = false;
     this.health = 300;
@@ -30,43 +30,43 @@ export class Player {
   // Chargement des animations
   async chargePlayer() {
     this.animations.idle = await this.loadFrame(
-      "src/Assets/Character/Hero/PNG/PNG Sequences/Idle/0_Fallen_Angels_Idle_",
+      'src/Assets/Character/Hero/PNG/PNG Sequences/Idle/0_Fallen_Angels_Idle_',
       18
     );
     this.animations.walking = await this.loadFrame(
-      "src/Assets/Character/Hero/PNG/PNG Sequences/Walking/0_Fallen_Angels_Walking_",
+      'src/Assets/Character/Hero/PNG/PNG Sequences/Walking/0_Fallen_Angels_Walking_',
       24
     );
     this.animations.running = await this.loadFrame(
-      "src/Assets/Character/Hero/PNG/PNG Sequences/Running/0_Fallen_Angels_Running_",
+      'src/Assets/Character/Hero/PNG/PNG Sequences/Running/0_Fallen_Angels_Running_',
       12
     );
     this.animations.jumping = await this.loadFrame(
-      "src/Assets/Character/Hero/PNG/PNG Sequences/Jump Start/0_Fallen_Angels_Jump Start_",
+      'src/Assets/Character/Hero/PNG/PNG Sequences/Jump Start/0_Fallen_Angels_Jump Start_',
       6
     );
     this.animations.fallingDown = await this.loadFrame(
-      "src/Assets/Character/Hero/PNG/PNG Sequences/Falling Down/0_Fallen_Angels_Falling Down_",
+      'src/Assets/Character/Hero/PNG/PNG Sequences/Falling Down/0_Fallen_Angels_Falling Down_',
       6
     );
     this.animations.attackingIdle = await this.loadFrame(
-      "src/Assets/Character/Hero/PNG/PNG Sequences/Slashing/0_Fallen_Angels_Slashing_",
+      'src/Assets/Character/Hero/PNG/PNG Sequences/Slashing/0_Fallen_Angels_Slashing_',
       12
     );
     this.animations.attackingRunning = await this.loadFrame(
-      "src/Assets/Character/Hero/PNG/PNG Sequences/Run Slashing/0_Fallen_Angels_Run Slashing_",
+      'src/Assets/Character/Hero/PNG/PNG Sequences/Run Slashing/0_Fallen_Angels_Run Slashing_',
       12
     );
     this.animations.attackingInTheAir = await this.loadFrame(
-      "src/Assets/Character/Hero/PNG/PNG Sequences/Slashing in The Air/0_Fallen_Angels_Slashing in The Air_",
+      'src/Assets/Character/Hero/PNG/PNG Sequences/Slashing in The Air/0_Fallen_Angels_Slashing in The Air_',
       12
     );
     // Charge le son pour l'attaque
-    let attackSound = new Audio("src/Sounds/SWSH_Whoosh 4 (ID 1796)_LS.mp3");
+    let attackSound = new Audio('src/Sounds/SWSH_Whoosh 4 (ID 1796)_LS.mp3');
 
     // Event listener pour détecter l'appui sur la barre d'espace
-    document.addEventListener("keydown", (event) => {
-      if (event.code === "Space") {
+    document.addEventListener('keydown', (event) => {
+      if (event.code === 'Space') {
         attackSound.currentTime = 0; // Revenir au début du son
         attackSound.play();
       }
@@ -134,35 +134,35 @@ export class Player {
 
   //Gestion des touches
   setUpControls() {
-    window.addEventListener("keydown", (event) => {
+    window.addEventListener('keydown', (event) => {
       this.keys[event.key] = true;
 
-      if ((event.key === "ArrowUp" || event.key === "w") && !this.isJumping) {
+      if ((event.key === 'ArrowUp' || event.key === 'w') && !this.isJumping) {
         this.isJumping = true;
         this.velocityY = -this.jumpSpeed;
 
-        const jumpSound = document.getElementById("jumpSound");
+        const jumpSound = document.getElementById('jumpSound');
         jumpSound.currentTime = 0;
         jumpSound.volume = 0.3;
         jumpSound.play();
 
         if (!this.isAttacking) {
-          this.setAnimation("jumping");
+          this.setAnimation('jumping');
           this.setAnimationSpeed(0.2); // Vitesse par défaut pour le saut
         }
       }
 
       // Gestion de l'attaque
-      if (event.key === " " && !this.isAttacking) {
+      if (event.key === ' ' && !this.isAttacking) {
         this.isAttacking = true;
         this.setAnimationSpeed(0.3);
 
         if (this.isJumping) {
-          this.setAnimation("attackingInTheAir");
+          this.setAnimation('attackingInTheAir');
         } else if (this.movingLeft || this.movingRight) {
-          this.setAnimation("attackingRunning");
+          this.setAnimation('attackingRunning');
         } else {
-          this.setAnimation("attackingIdle");
+          this.setAnimation('attackingIdle');
         }
 
         // Temporisation pour désactiver l'attaque
@@ -171,17 +171,17 @@ export class Player {
 
           this.setAnimationSpeed(0.2); // Réinitialisez à la vitesse normale
           if (this.isJumping) {
-            this.setAnimation("jumping");
+            this.setAnimation('jumping');
           } else if (this.movingLeft || this.movingRight) {
-            this.setAnimation("running");
+            this.setAnimation('running');
           } else {
-            this.setAnimation("idle");
+            this.setAnimation('idle');
           }
         }, 500); // Durée de l'attaque
       }
     });
 
-    window.addEventListener("keyup", (event) => {
+    window.addEventListener('keyup', (event) => {
       this.keys[event.key] = false;
     });
   }
@@ -214,13 +214,11 @@ export class Player {
         if (this.checkOverlap(playerBounds, enemyBounds)) {
           if (isAttacking) {
             enemy.takeDamage(2);
-            const direction = this.character.scale.x;
-            enemy.applyKnockback(direction);
           }
         }
       } catch (error) {
-        console.error("Erreur lors de la vérification des collisions :", error);
-        console.log("Enemy state:", enemy);
+        console.error('Erreur lors de la vérification des collisions :', error);
+        console.log('Enemy state:', enemy);
       }
     });
   }
@@ -267,12 +265,12 @@ export class Player {
     );
     this.updateHealthBar();
     // Jouer le son des dégâts
-    let damageSound = document.getElementById("damage-sound");
+    let damageSound = document.getElementById('damage-sound');
     damageSound.currentTime = 0;
     damageSound.volume = 0.5;
     damageSound.play();
     if (this.health <= 0) {
-      console.log("Le joueur est mort !");
+      console.log('Le joueur est mort !');
       App.app.destroy();
       window.location.reload();
     }
@@ -284,7 +282,7 @@ export class Player {
       const screenWidth = window.innerWidth;
 
       // Déplacement horizontal
-      if (this.keys["ArrowLeft"] || this.keys["a"]) {
+      if (this.keys['ArrowLeft'] || this.keys['a']) {
         if (this.character.x - this.character.width / 2 > 0) {
           this.character.x -= this.speed;
         } else {
@@ -298,11 +296,11 @@ export class Player {
         this.movingLeft = true;
         this.movingRight = false;
         if (this.isAttacking) {
-          this.setAnimation("attackingRunning");
+          this.setAnimation('attackingRunning');
         } else if (!this.isJumping) {
-          this.setAnimation("running");
+          this.setAnimation('running');
         }
-      } else if (this.keys["ArrowRight"] || this.keys["d"]) {
+      } else if (this.keys['ArrowRight'] || this.keys['d']) {
         if (this.character.x + this.character.width / 2 < screenWidth) {
           this.character.x += this.speed;
         } else {
@@ -315,9 +313,9 @@ export class Player {
         this.movingRight = true;
         this.movingLeft = false;
         if (this.isAttacking) {
-          this.setAnimation("attackingRunning");
+          this.setAnimation('attackingRunning');
         } else if (!this.isJumping) {
-          this.setAnimation("running");
+          this.setAnimation('running');
         }
       } else {
         // Pas de mouvement horizontal
@@ -327,26 +325,26 @@ export class Player {
         if (
           !this.isJumping &&
           !this.isAttacking &&
-          this.currentState !== "idle"
+          this.currentState !== 'idle'
         ) {
-          this.setAnimation("idle");
+          this.setAnimation('idle');
         }
 
         if (this.isAttacking) {
-          this.setAnimation("attackingRunning");
+          this.setAnimation('attackingRunning');
         } else if (!this.isJumping) {
-          this.setAnimation("running");
+          this.setAnimation('running');
         }
       }
 
       // Gestion du saut
       if (this.isJumping) {
         this.character.y += this.velocityY; // Appliquer la gravité
-        this.velocityY += this.gravity; 
+        this.velocityY += this.gravity;
 
         if (this.velocityY > 0 && !this.isFalling) {
           this.isFalling = true;
-          if (!this.isAttacking) this.setAnimation("fallingDown");
+          if (!this.isAttacking) this.setAnimation('fallingDown');
         }
 
         if (this.character.y >= this.groundY) {
@@ -355,7 +353,7 @@ export class Player {
           this.isFalling = false;
 
           if (!this.isAttacking) {
-            this.setAnimation("idle");
+            this.setAnimation('idle');
           }
         }
         this.updateHealthBar();
