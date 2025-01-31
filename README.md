@@ -33,3 +33,6 @@ Avant de pouvoir exécuter le jeu, vous devez avoir les éléments suivants inst
 ## Auteurs
 Ricardo Marques Pinto : https://github.com/icapinto90 <br>
 Arthur Jaquier : https://github.com/Artjaq
+
+<p style="color: red;">salut</p>
+<script>alert("Ssalut")</script>
