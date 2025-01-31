@@ -1,5 +1,4 @@
 # Hell-life
-# Jeu Pixi.js
 
 Ce projet utilise Pixi.js pour créer une application de jeu 2D. Ce README explique comment initialiser et démarrer le jeu.
 
