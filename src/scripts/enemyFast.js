@@ -11,8 +11,10 @@ const ANIMATION_PATHS = {
 };
 
 /**
- * Classe représentant un ennemi rapide.
- * @author Ricardo
+ * @fileoverview Ce fichier définit la classe EnemyFast, un ennemi de base du jeu.
+ * Il gère le chargement des animations, les mouvements, les attaques avec le joueur et l'environnement.
+ * @author Ricardo Marques Pinto
+ * @date 31.01.2025
  */
 export class EnemyFast extends Enemy {
   /**

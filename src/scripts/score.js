@@ -1,5 +1,12 @@
 import * as PIXI from "pixi.js";
-import { App } from "./app";
+
+/**
+ * @fileoverview Système de gestion du score et du temps pour le jeu.
+ * Ce module gère le score du joueur en fonction du temps écoulé et du nombre d'ennemis éliminés.
+ * Il met également à jour l'affichage du score et du temps à l'écran.
+ * @author Ricardo Marques Pinto
+ * @date 31.01.2025
+ */
 
 export class ScoreSystem {
   constructor() {

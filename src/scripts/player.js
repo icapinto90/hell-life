@@ -2,6 +2,16 @@ import * as PIXI from 'pixi.js';
 import { getGroundYAtX } from './utils/getGroundYAtX.js';
 import { App } from './app.js';
 
+
+/**
+ * @fileoverview Ce fichier définit la classe Player pour le jeu.
+ * Il gère les animations, le mouvement, les sauts, les attaques,
+ * la gestion de la vie et les collisions avec les ennemis.
+ * Le joueur peut se déplacer, sauter, attaquer et subir des dégâts.
+ * @author Jaquier Arthur
+ * @date 31.01.2025
+ */
+
 export class Player {
   constructor() {
     this.container = new PIXI.Container(); // Conteneur pour gérer le joueur
@@ -89,7 +99,7 @@ export class Player {
     this.healthBar.position.y = this.character.y - 100;
     this.container.addChild(this.character);
     this.container.addChild(this.healthBar);
-    this.updateHealthBar(); // Mise à jour initiale
+    this.updateHealthBar(); 
     this.container.addChild(this.character);
   }
 
@@ -170,7 +180,7 @@ export class Player {
           this.isAttacking = false;
 
           this.setAnimationSpeed(0.2); // Réinitialisez à la vitesse normale
-          if (this.isJumping) {
+          if (this .isJumping) {
             this.setAnimation('jumping');
           } else if (this.movingLeft || this.movingRight) {
             this.setAnimation('running');

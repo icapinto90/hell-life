@@ -9,9 +9,12 @@ const HEALTH_BAR_WIDTH = 100;
 const HEALTH_BAR_HEIGHT = 10;
 
 /**
- * Classe abstraite représentant un ennemi dans le jeu.
+ * @fileoverview Classe abstraite Enemy.
+ * Cette classe gère les déplacements, la gravité, les animations et les points de vie des ennemis.
+ * Elle sert de base pour différents types d'ennemis, en permettant la gestion des attaques et des interactions avec le sol.
  * @abstract
- * @author Ricardo
+ * @author Ricardo Marques Pinto
+ * @date 31.01.2025
  */
 export class Enemy {
   /**
@@ -106,7 +109,7 @@ export class Enemy {
   chargeEnemy(texture) {
     this.enemy = new PIXI.AnimatedSprite(texture, 1);
     this.enemy.anchor.set(0.5);
-    this.enemy.animationSpeed = 0.5;
+    this.enemy.animationSpeed = 0.2;
     this.enemy.play();
     this.enemy.width = 150;
     this.enemy.height = 150;
@@ -120,7 +123,7 @@ export class Enemy {
    * @param {string} animationType - Type d'animation (ex: "walking", "attacking").
    * @param {number} [speedAnimation=1] - Vitesse de l'animation
    */
-  launchAnimation(animationType, speedAnimation = 1) {
+  launchAnimation(animationType, speedAnimation = 0.5) {
     if (this.dead) return;
     if (animationType === 'dying') this.dead = true;
     const animation = this.animations[animationType];

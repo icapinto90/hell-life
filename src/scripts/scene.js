@@ -7,6 +7,15 @@ import { getGroundPhysic } from './utils/getGroundPhysic.js';
 import { Player } from './player.js';
 import { ScoreSystem } from './score.js';
 
+/**
+ * @fileoverview Ce fichier définit la classe Scene pour gérer la scène du jeu.
+ * Il inclut la gestion du joueur, des ennemis, des vagues d'ennemis et du score.
+ * @authors 
+ * - Ricardo Marques Pinto : Gestion des ennemis, du système de vagues & du score
+ * - Jaquier Arthur : Intégration du joueur et affichage de la scène
+ * @date 31.01.2025
+ */
+
 export class Scene {
   constructor() {
     (async () => {
