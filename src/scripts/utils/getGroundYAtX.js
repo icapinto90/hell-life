@@ -1,5 +1,14 @@
+/**
+ * @fileoverview Ce module permet de récupérer la hauteur du sol à une position x donnée.
+ * Il prend en compte les contours du sprite pour déterminer la hauteur du sol.
+ * @param {Object[]} contour - Un tableau d'objets contenant les coordonnées des points du contour.
+ * @param {number} x - La position x à
+ * @returns {number} - La hauteur du sol à la position x donnée.
+ * @author Ricardo Marques Pinto
+ * @date 31.01.2025
+ */
 export function getGroundYAtX(contour, x) {
-  // Arrondir x
+
   const roundedX = Math.round(x);
 
   // Chercher des points autour de x si le point exact n'est pas trouvé

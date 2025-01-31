@@ -1,5 +1,12 @@
 import * as PIXI from "pixi.js";
 
+/**
+ * @fileoverview Ce système permet de charger une séquence d'images pour créer une animation.
+ * @param {string} basePath - Le chemin de base des images à charger.
+ * @returns {Promise<PIXI.Texture[]>} - Un tableau de textures chargées.
+ * @author Ricardo Marques Pinto
+ * @date 31.01.2025
+ */
 export async function loadFrames(basePath) {
   const frames = [];
   let i = 0;
@@ -11,8 +18,8 @@ export async function loadFrames(basePath) {
 
     try {
       const texture = await PIXI.Assets.load(frame);
-      frames.push(texture); // Ajouter la texture au tableau
-      i++; // Passer au prochain numéro de frame
+      frames.push(texture);
+      i++; 
     } catch (error) {
       console.warn(`No more frames found at ${frame}. Stopping.`);
       break; // Arrêter si une frame n'est pas trouvée
