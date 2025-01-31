@@ -12,7 +12,7 @@ import { ScoreSystem } from './score.js';
  * Il inclut la gestion du joueur, des ennemis, des vagues d'ennemis et du score.
  * @authors 
  * - Ricardo Marques Pinto : Gestion des ennemis, du système de vagues & du score
- * - Jaquier Arthur : Intégration du joueur et affichage de la scène
+ * - Arthur Jaquier : Intégration du joueur et affichage de la scène
  * @date 31.01.2025
  */
 

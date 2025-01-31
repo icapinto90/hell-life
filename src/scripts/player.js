@@ -8,7 +8,7 @@ import { App } from './app.js';
  * Il gère les animations, le mouvement, les sauts, les attaques,
  * la gestion de la vie et les collisions avec les ennemis.
  * Le joueur peut se déplacer, sauter, attaquer et subir des dégâts.
- * @author Jaquier Arthur
+ * @author Arthur Jaquier
  * @date 31.01.2025
  */
 

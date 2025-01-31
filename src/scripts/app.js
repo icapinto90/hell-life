@@ -2,10 +2,11 @@ import { Application } from 'pixi.js';
 import { Scene } from './scene';
 
 /**
- * Classe principale du jeu.
+ * @fileoverview Classe principale du jeu.
  * Cette classe gère l'initialisation de l'application Pixi.js,
  * l'ajout des scènes et la gestion de l'interactivité.
  * @author Ricardo Marques Pinto & Arthur Jaquier
+ * @date 31.01.2025
  */
 
 class GameApplication {
