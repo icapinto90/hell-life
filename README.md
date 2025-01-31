@@ -8,7 +8,8 @@ Avant de pouvoir exécuter le jeu, vous devez avoir les éléments suivants inst
 
 - [Node.js](https://nodejs.org/) (version 14 ou supérieure)
 - [npm](https://www.npmjs.com/) (généralement installé avec Node.js)
-- [PIXIJS](https://pixijs.com) (version 8.0)
+- [Vite](https://www.npmjs.com) (version 6.0.3, installé avec "npm install")
+- [PIXIJS](https://pixijs.com) (version 8.0, installé avec "npm install")
 
 ## Installation
 
