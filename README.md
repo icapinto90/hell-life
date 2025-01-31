@@ -17,9 +17,21 @@ Avant de pouvoir exécuter le jeu, vous devez avoir les éléments suivants inst
    ```bash
    git clone <url-du-dépôt>
    cd <nom-du-dépôt>
-   Installer les dépendances du projet
+
+2. Installez les dépendances du projet avec npm :
+
+```bash
    npm install
-   Lancer le jeu
+
+
+3. Lancer le jeux
+
+```bash
    npx vite
+
+
+
+
+
 
 
