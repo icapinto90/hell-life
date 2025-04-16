@@ -1,6 +1,6 @@
-# 🚀 Hell-life : La Startup qui Réinvente le Gaming 2D
+# 🚀 Hell-life 
 
-**Hell-life**, ce n'est pas qu'un simple projet. C'est **la startup** qui va bousculer le monde du jeu vidéo avec une expérience **2D immersive**, rapide et optimisée grâce à **Pixi.js** et **Vite**. Une architecture pensée pour la **scalabilité**, des performances **ultra-réactives** et une technologie **state-of-the-art** offrant une expérience fluide sur tous les navigateurs modernes.
+Hell-life est un petit jeu 2D réalisé avec Pixi.js et Vite. Pensé pour être léger et fluide, il tourne facilement dans n'importe quel navigateur moderne. C’est un projet étudiant sans prétention, mais avec l’envie de créer une expérience sympa et dynamique.
 
 ---
 
