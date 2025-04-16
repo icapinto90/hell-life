@@ -4,12 +4,14 @@ Hell-life est un petit jeu 2D réalisé avec Pixi.js et Vite. Pensé pour être 
 
 ---
 
-## 🌟 Pourquoi **Hell-life** est la prochaine pépite du gaming ?
+## 🌟 Qu’est-ce qui rend Hell-life sympa à découvrir ?
+⚡ Tech moderne : Node.js, Vite, PIXIJS 8.0 – une base solide pour un projet simple mais efficace.
 
-- ⚡ **Stack moderne** : Node.js, Vite, PIXIJS 8.0 – des outils robustes et performants.  
-- 🚀 **Temps de chargement quasi instantané** grâce à Vite, parfait pour un **lancement SaaS** de jeux.  
-- 🎨 **Graphismes 2D avancés** propulsés par PIXIJS – la référence pour des rendus interactifs rapides.  
-- 🧩 **Expérience développeur optimisée** : déploiement ultra-simple, développement fluide.  
+🚀 Chargement rapide grâce à Vite, pour tester le jeu en un clin d'œil.
+
+🎨 Graphismes 2D avec PIXIJS – de quoi faire des rendus propres et réactifs.
+
+🧩 Facile à développer et à déployer, idéal pour apprendre en s’amusant.
 
 ---
 
